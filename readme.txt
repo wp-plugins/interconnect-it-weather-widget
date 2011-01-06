@@ -4,7 +4,7 @@ Donate link: http://interconnectit.com/1474/wordpress-weather-widget/
 Tags: weather, widget
 Requires at least: 3.0
 Tested up to: 3.0.2
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 
 An easy to use, elegant weather widget to work in most sidebar and widget locations.
 
