@@ -4,7 +4,7 @@ Donate link: http://interconnectit.com/1474/wordpress-weather-widget/
 Tags: weather, widget
 Requires at least: 3.0
 Tested up to: 3.0.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 
 An easy to use, elegant weather widget to work in most sidebar and widget locations.
 
@@ -12,11 +12,11 @@ An easy to use, elegant weather widget to work in most sidebar and widget locati
 
 We found many of the weather widgets and badges out there lacking. Either they were not aimed at regular users (having to track down your own locid for non-US addresses for example) or they had rate limits on the API. And almost all were just plain ugly. We had to fix that.
 
-At Interconnect IT we believe in speed, reliability and usability.  To that end we decided to create our own releasable weather widget.  Using the wonderful images from [Radoslav Dimov's jDigiClock jQuery plugin] (http://www.radoslavdimov.com/jquery-plugins/jquery-plugin-digiclock/), we were able to build an attractive, GPL compatible weather widget.  We all like that.
+At Interconnect IT we believe in speed, reliability and usability.  To that end we decided to create our own releasable weather widget.  Using the wonderful images from [Radoslav Dimov's jDigiClock jQuery plugin](http://www.radoslavdimov.com/jquery-plugins/jquery-plugin-digiclock/), we were able to build an attractive, GPL compatible weather widget.  We all like that.
 
 The widget uses caching, so by default only makes 24 API calls to the Google Weather API, making sure that no matter how busy your site, you aren't going to find your widget blocked for making too many requests.
 
-The widget is prepared for translation, if you'd like to drop us a line about your translation you can contact us through our [website] (http://interconnectit.com/about/contact/).
+The widget is prepared for translation, if you'd like to drop us a line about your translation you can contact us through our [website](http://interconnectit.com/about/contact/).
 
 == Installation ==
 
@@ -61,6 +61,10 @@ This could be because there are no weather results returned from Google for your
 2. The widget configuration panel.
 
 == Changelog ==
+
+
+= 1.0.3 =
+* Text tweaks.
 
 = 1.0.2 =
 * The version we should have released to the public first, but David's an idiot who can't keep a track on version numbers...
