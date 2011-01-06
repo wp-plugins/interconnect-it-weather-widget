@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: InterconnectIT Weather Widget\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-10-20 16:29-0000\n"
+"POT-Creation-Date: 2010-12-08 14:02-0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Interconnect IT <admin@interconnectit.com>\n"
 "Language-Team: Interconnect IT\n"
@@ -17,74 +17,115 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,-1,-1,24,-1,-1,-1,-1,-1,-1\n"
 "X-Poedit-SearchPath-0: icit-weather-widget\n"
 
-#: icit-weather-widget/icit-weather-widget.php:71
+#: icit-weather-widget/icit-weather-widget.php:78
 msgid "Show the weather from a location you specify."
 msgstr "Show the weather from a location you specify."
 
-#: icit-weather-widget/icit-weather-widget.php:72
+#: icit-weather-widget/icit-weather-widget.php:79
 msgid "ICIT Weather"
 msgstr "ICIT Weather"
 
-#: icit-weather-widget/icit-weather-widget.php:139
+#: icit-weather-widget/icit-weather-widget.php:182
+msgid "Today"
+msgstr "Today"
+
+#: icit-weather-widget/icit-weather-widget.php:194
 #, php-format
 msgid "Last updated at %1$s on %2$s"
 msgstr "Last updated at %1$s on %2$s"
 
-#: icit-weather-widget/icit-weather-widget.php:161
+#: icit-weather-widget/icit-weather-widget.php:198
+msgid "Weather Widget by <a href=\"http://interconnectit.com/\" title=\"Wordpress Development Specialists\">Interconnect/IT</a>"
+msgstr "Weather Widget by <a href=\"http://interconnectit.com/\" title=\"Wordpress Development Specialists\">Interconnect/IT</a>"
+
+#: icit-weather-widget/icit-weather-widget.php:253
 msgid "Title:"
 msgstr "Title:"
 
-#: icit-weather-widget/icit-weather-widget.php:163
+#: icit-weather-widget/icit-weather-widget.php:255
 msgid "This will override the display of the city name."
 msgstr "This will override the display of the city name."
 
-#: icit-weather-widget/icit-weather-widget.php:167
+#: icit-weather-widget/icit-weather-widget.php:259
 msgid "Choose the country:"
 msgstr "Choose the country:"
 
-#: icit-weather-widget/icit-weather-widget.php:177
+#: icit-weather-widget/icit-weather-widget.php:269
 msgid "City, town, postcode or zip code:"
 msgstr "City, town, postcode or zip code:"
 
-#: icit-weather-widget/icit-weather-widget.php:182
+#: icit-weather-widget/icit-weather-widget.php:274
+msgid "Widget display:"
+msgstr "Widget display:"
+
+#: icit-weather-widget/icit-weather-widget.php:276
+msgid "Compact"
+msgstr "Compact"
+
+#: icit-weather-widget/icit-weather-widget.php:277
+msgid "Extended"
+msgstr "Extended"
+
+#: icit-weather-widget/icit-weather-widget.php:281
+msgid "Show forecast for:"
+msgstr "Show forecast for:"
+
+#: icit-weather-widget/icit-weather-widget.php:284
+msgid "Today only"
+msgstr "Today only"
+
+#: icit-weather-widget/icit-weather-widget.php:284
+#, php-format
+msgid "%s days"
+msgstr "%s days"
+
+#: icit-weather-widget/icit-weather-widget.php:289
 msgid "How often do we check the weather (mins):"
 msgstr "How often do we check the weather (mins):"
 
-#: icit-weather-widget/icit-weather-widget.php:187
-msgid "Show temperature in celsius: "
-msgstr "Show temperature in celsius: "
+#: icit-weather-widget/icit-weather-widget.php:296
+msgid "Show temperature in celsius"
+msgstr "Show temperature in celsius"
 
-#: icit-weather-widget/icit-weather-widget.php:191
+#: icit-weather-widget/icit-weather-widget.php:302
+msgid "Output CSS"
+msgstr "Output CSS"
+
+#: icit-weather-widget/icit-weather-widget.php:308
+msgid "Show Interconnect IT credit link"
+msgstr "Show Interconnect IT credit link"
+
+#: icit-weather-widget/icit-weather-widget.php:312
 #, php-format
 msgid "Last updated \"%1$s\". Current server time is \"%2$s\"."
 msgstr "Last updated \"%1$s\". Current server time is \"%2$s\"."
 
-#: icit-weather-widget/icit-weather-widget.php:191
+#: icit-weather-widget/icit-weather-widget.php:312
 #, php-format
 msgid "Will update when the frontend is next loaded. Current server time is %2$s."
 msgstr "Will update when the frontend is next loaded. Current server time is %2$s."
 
-#: icit-weather-widget/icit-weather-widget.php:195
+#: icit-weather-widget/icit-weather-widget.php:316
 #, php-format
 msgid "The last error occured at \"%s\" with the message \"%s\"."
 msgstr "The last error occured at \"%s\" with the message \"%s\"."
 
-#: icit-weather-widget/icit-weather-widget.php:196
+#: icit-weather-widget/icit-weather-widget.php:317
 msgid "Clear errors: "
 msgstr "Clear errors: "
 
-#: icit-weather-widget/includes/helpers.php:23
+#: icit-weather-widget/includes/helpers.php:20
 #, php-format
 msgid "HTTP response code %s"
 msgstr "HTTP response code %s"
 
-#: icit-weather-widget/includes/helpers.php:36
+#: icit-weather-widget/includes/helpers.php:33
 msgid "Most likely could not find the place you were looking for or Google have broken their weather API."
 msgstr "Most likely could not find the place you were looking for or Google have broken their weather API."
 
-#: icit-weather-widget/includes/helpers.php:44
-#: icit-weather-widget/includes/helpers.php:56
-#: icit-weather-widget/includes/helpers.php:69
+#: icit-weather-widget/includes/helpers.php:41
+#: icit-weather-widget/includes/helpers.php:53
+#: icit-weather-widget/includes/helpers.php:66
 msgid "Unexpected feed format."
 msgstr "Unexpected feed format."
 
@@ -254,8 +295,6 @@ msgstr "Unexpected feed format."
 #~ "logged in user, the user found in the cookie or a default avatar. Some "
 #~ "plug-ins can get in the way of this and cause problems if that happens to "
 #~ "you your best option is to not show this avatar."
-#~ msgid "Show form avatar"
-#~ msgstr "Show form avatar"
 #~ msgid "Choose the stylesheet you want to use for the comments."
 #~ msgstr "Choose the stylesheet you want to use for the comments."
 #~ msgid "Disable"

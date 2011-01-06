@@ -1,9 +1,9 @@
 === Plugin Name ===
-Contributors: interconnectit, spectacula
+Contributors: interconnectit, spectacula, sanchothefat
 Donate link: http://interconnectit.com/1474/wordpress-weather-widget/
 Tags: weather, widget
 Requires at least: 3.0
-Tested up to: 3.0
+Tested up to: 3.0.2
 Stable tag: 1.0.1
 
 An easy to use, elegant weather widget to work in most sidebar and widget locations.
@@ -49,7 +49,11 @@ The Google Weather API.
 
 = The forecast isn't accurate =
 
-Weather forecasts often aren't!  However, in some locations it's less accurate than others.  There's not a lot we can do about that, but hopefully it's good enough for most uses.
+If this is the case then we can't help much as we simply use Google's supplied data.  We may offer a choice of data suppliers in the future.
+
+= The Widget is Not Displaying =
+
+This could be because there are no weather results returned from Google for your region or area. You can try being less specific eg. by entering the name of your nearest City rather than Town but if you feel there is a mistake please let us know.
 
 == Screenshots ==
 
@@ -57,6 +61,9 @@ Weather forecasts often aren't!  However, in some locations it's less accurate t
 2. The widget configuration panel.
 
 == Changelog ==
+
+= 1.0.2 =
+* The version we should have released to the public first, but David's an idiot who can't keep a track on version numbers...
 
 = 1.0.1 =
 * Added a range of options, made plugin generic for use on most sites, first public release version.
