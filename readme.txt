@@ -58,7 +58,8 @@ This could be because there are no weather results returned from Google for your
 == Screenshots ==
 
 1. The extended mode display as you'd normally see on a site.
-2. The widget configuration panel.
+2. The compact mode display showing three days of weather information.
+3. The widget configuration panel.
 
 == Changelog ==
 
