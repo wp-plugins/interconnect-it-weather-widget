@@ -1,17 +1,23 @@
 <?php
 
 
+function icit_change_user_agent(){
+	$agent = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.237 Safari/534.10";
+	return $agent;
+}
 
 
 if ( ! function_exists( 'icit_fetch_google_weather' ) ) {
 	function icit_fetch_google_weather( $city = 'liverpool', $country = 'UK', $extended = true ) {
 		global $iso3166;
 
-		$url = sprintf( 'http://www.google.com/ig/api?weather=%s,%s&hl=en', urlencode( strtolower( $city ) ), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'gb' );
+		$url = sprintf( 'http://www.google.com/ig/api?weather=%s,%s&hl=en', urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'gb' );
+
+		#Change the user agent string (Fixes problem with results of some country/city locations not being returned)
+		add_filter('http_headers_useragent', 'icit_change_user_agent');
 
 		// Collect the HTML file
-		$responce = wp_remote_request( $url );
-
+		$responce = wp_remote_request($url );
 		// Check the headers
 		if ( is_wp_error( $responce ) )
 			return $responce;
@@ -19,8 +25,9 @@ if ( ! function_exists( 'icit_fetch_google_weather' ) ) {
 		if ( wp_remote_retrieve_response_code( $responce ) != 200 )
 			return new WP_Error( 'html_fetch', sprintf( __( 'HTTP response code %s', ICIT_WEATHER_DOM ), wp_remote_retrieve_response_code( $responce ) ) );
 
+
 		// Create the XML object
-		$xml = wp_remote_retrieve_body( $responce );
+		$xml = wp_remote_retrieve_body($responce);
 
 		try {
 			$data = @new SimpleXMLElement( $xml, LIBXML_NOCDATA );
@@ -82,4 +89,5 @@ if ( ! function_exists( 'icit_fetch_google_weather' ) ) {
 		return $output;
 	}
 }
+
 ?>

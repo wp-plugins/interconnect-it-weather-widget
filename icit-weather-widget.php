@@ -8,6 +8,15 @@
  Author URI: http://interconnectit.com
 */
 
+/*
+ Pete: Fixed the Zurich issue by changing the useragent, guess someone in Zuric
+	upset Google with WordPress. :D
+ James: Changed the class name on the extended forecast LI so it is prefixed
+	with the word condition. Problems arose when the weather was "clear", too
+	many themes have a class of clear that's there to force open float
+	containers,	mine included.
+*/
+
 if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 5.0, 'ge' ) && version_compare( $wp_version, 3.0, 'ge' ) ) {
 
 	// Define some fixed elements
@@ -144,7 +153,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 					<div class="weather-icon">
 						<!--[if lt IE 7]><div style="width:160px;height:103px;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='<?php echo $image[ 'src' ]; ?>');"></div><div style="display:none"><![endif]-->
-						<img src="<?php echo $image[ 'src' ]; ?>" alt="<?php echo esc_attr( $image[ 'condition' ] );?>" width="160" height="103" />
+						<img src="<?php if(!empty($image[ 'src' ])){ echo $image[ 'src' ];}else{echo plugins_url(basename(dirname(__FILE__))).'/images/na.png' ;} ?>" alt="<?php echo esc_attr( $data[ 'current' ][ 'condition' ] );?>" width="160" height="103" />
 						<!--[if lt IE 7]></div><![endif]-->
 					</div>
 					<div class="weather-location"><?php echo empty( $title ) ? $location : $title; ?></div>
