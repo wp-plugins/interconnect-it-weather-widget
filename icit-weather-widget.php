@@ -184,10 +184,10 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 						$image = $this->check_image( $day_data[ 'icon' ], true );
 					?>
-						<li class="<?php echo strtolower( $day ); ?> <?php echo strtolower( preg_replace( "/\s/", "-", trim( $day_data[ 'condition' ] ) ) ); ?>" title="<?php esc_attr_e( $day_data[ 'condition' ] ); ?>">
+						<li class="<?php echo strtolower( $day ); ?> <?php echo sanitize_title( 'condition-' . trim( $day_data[ 'condition' ] ) ); ?>" title="<?php esc_attr_e( $day_data[ 'condition' ] ); ?>">
 							<div class="weather-icon-thumb">
 								<!--[if lt IE 7]><div style="width:50px;height:32px;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='<?php echo $image[ 'src' ]; ?>');"></div><div style="display:none"><![endif]-->
-								<img src="<?php echo $image[ 'src' ]; ?>" alt="<?php echo esc_attr( $image[ 'condition' ] );?>" width="50" height="32" />
+								<img src="<?php echo $image[ 'src' ]; ?>" alt="<?php echo esc_attr( $day_data[ 'condition' ] );?>" width="50" height="32" />
 								<!--[if lt IE 7]></div><![endif]-->
 							</div>
 							<div class="weather-day"><strong><?php echo $i == 0 ? __('Today', ICIT_WEATHER_DOM) : $day; ?></strong></div>
