@@ -17,6 +17,9 @@
 	containers,	mine included.
 */
 
+
+global $wp_version;
+
 if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 5.0, 'ge' ) && version_compare( $wp_version, 3.0, 'ge' ) ) {
 
 	// Define some fixed elements
