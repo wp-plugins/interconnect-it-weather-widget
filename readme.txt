@@ -3,8 +3,8 @@ Contributors: interconnectit, spectacula, sanchothefat
 Donate link: http://interconnectit.com/1474/wordpress-weather-widget/
 Tags: weather, widget
 Requires at least: 3.0
-Tested up to: 3.0.4
-Stable tag: 1.0.3
+Tested up to: 3.1
+Stable tag: 1.0.4
 
 An easy to use, elegant weather widget to work in most sidebar and widget locations.
 
@@ -63,6 +63,11 @@ This could be because there are no weather results returned from Google for your
 
 == Changelog ==
 
+
+= 1.0.4 =
+* Fixed problem with some cities being blocked by Google based on browser sig of WordPress (yes, really!) and changed sig to Chrome.
+* Some tweaks to improve translation.
+* Fix which will hopefully resolve the rare but annoying missing image problem when Google doesn't return correct information - the image displayed should now switch to an N/A variant.
 
 = 1.0.3 =
 * Text tweaks.
