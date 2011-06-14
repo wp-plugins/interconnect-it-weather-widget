@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather widget
  Plugin URI: http://interconnectit.com/1474/wordpress-weather-widget/
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 1.0.4
+ Version: 1.0.5
  Author: Interconnect IT, James R Whitehead, Robert O'Rourke
  Author URI: http://interconnectit.com
 */
@@ -15,6 +15,14 @@
 	with the word condition. Problems arose when the weather was "clear", too
 	many themes have a class of clear that's there to force open float
 	containers,	mine included.
+ Rob: Changed the google API call to use get_locale() which means it returns
+	translated day names, conditions etc... when WPLANG is set or when 'locale'
+	filter is used. In multisite WPLANG is in the options tables with same name.
+
+	Checks unit system to determine if f_to_c() needs calling.
+
+	Image handling & fallback are filterable now incase google change their icon
+	URLs again.
 */
 
 
@@ -44,27 +52,27 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 	class icit_weather_widget extends WP_Widget {
 
 		var $images = array(
-						'sunny' => '1.png',
-						'mostly_sunny' => '2.png',
-						'partly_cloudy' => '4.png',
-						'mostly_cloudy' => '6.png',
-						'chance_of_storm' => '13.png',
-						'rain' => '12.png',
-						'chance_of_rain' => '14.png',
-						'chance_of_snow' => '21.png',
-						'cloudy' => '7.png',
-						'mist' => '11.png',
-						'storm' => '18.png',
-						'thunderstorm' => '15.png',
-						'chance_of_tstorm' => '17.png',
-						'sleet' => '26.png',
-						'snow' => '22.png',
-						'icy' => '31.png',
-						'dust' => '32.png',
-						'fog' => '32.png',
-						'smoke' => '32.png',
-						'haze' => '5.png',
-						'flurries' => '22.png'
+						'sunny' 			=> 'sunny.png',
+						'mostly_sunny' 		=> 'mostly_sunny.png',
+						'partly_cloudy' 	=> 'partly_cloudy.png',
+						'mostly_cloudy' 	=> 'mostly_cloudy.png',
+						'chance_of_storm' 	=> 'chance_of_storm.png',
+						'rain' 				=> 'rain.png',
+						'chance_of_rain' 	=> 'chance_of_rain.png',
+						'chance_of_snow' 	=> 'chance_of_snow.png',
+						'cloudy' 			=> 'cloudy.png',
+						'mist' 				=> 'mist.png',
+						'storm' 			=> 'storm.png',
+						'thunderstorm' 		=> 'thunderstorm.png',
+						'chance_of_tstorm' 	=> 'chance_of_tstorm.png',
+						'sleet' 			=> 'sleet.png',
+						'snow'				=> 'snow.png',
+						'icy' 				=> 'icy.png',
+						'dust' 				=> 'mist.png',
+						'fog' 				=> 'fog.png',
+						'smoke' 			=> 'mist.png',
+						'haze' 				=> 'haze.png',
+						'flurries' 			=> 'flurries.png'
 					);
 
 		var $defaults = array(
@@ -89,6 +97,8 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		function icit_weather_widget( ) {
 			$widget_ops = array( 'classname' => __CLASS__, 'description' => __( 'Show the weather from a location you specify.', ICIT_WEATHER_DOM ) );
 			$this->WP_Widget( __CLASS__, __( 'ICIT Weather', ICIT_WEATHER_DOM), $widget_ops);
+
+			$this->images = apply_filters('icit_weather_widget_images', $this->images );
 		}
 
 
@@ -138,6 +148,9 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				// output the css if desired
 				if ( $css )
 					$this->css();
+
+				// get unit type for forecast
+				$unit_sys = $data[ 'forecast_info' ][ 'unit_system' ];
 
 				// tidy up location name
 				$location = array();
@@ -195,9 +208,9 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 							</div>
 							<div class="weather-day"><strong><?php echo $i == 0 ? __('Today', ICIT_WEATHER_DOM) : $day; ?></strong></div>
 							<div class="weather-hilo">
-								<span class="weather-high"><?php echo $celsius ? $this->f_to_c( $day_data[ 'high' ] ) . '<span class="deg">&deg;<span class="celsius">C</span></span>' : $day_data[ 'high' ] . '<span class="deg">&deg;<span class="farenheit">F</span></span>'; ?></span>
+								<span class="weather-high"><?php echo $celsius && $unit_sys == 'US' ? $this->f_to_c( $day_data[ 'high' ] ) : $day_data[ 'high' ]; echo $celsius ?  '<span class="deg">&deg;<span class="celsius">C</span></span>' : '<span class="deg">&deg;<span class="farenheit">F</span></span>'; ?></span>
 								<span class="weather-separator">/</span>
-								<span class="weather-low"><?php echo $celsius ? $this->f_to_c( $day_data[ 'low' ] ) . '<span class="deg">&deg;<span class="celsius">C</span></span>' : $day_data[ 'low' ] . '<span class="deg">&deg;<span class="farenheit">F</span></span>'; ?></span>
+								<span class="weather-low"><?php echo $celsius && $unit_sys == 'US' ? $this->f_to_c( $day_data[ 'low' ] ) : $day_data[ 'low' ]; echo $celsius ?  '<span class="deg">&deg;<span class="celsius">C</span></span>' : '<span class="deg">&deg;<span class="farenheit">F</span></span>'; ?></span>
 							</div>
 						</li>
 					<?php $i++; } ?>
@@ -230,7 +243,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				elseif ( file_exists( ICIT_WEATHER_PTH . '/images/' . $icon[ 1 ] . '.png' ) )
 					$icon[ 'filename' ] = $icon[ 1 ] . '.png';
 				else
-					$icon[ 'filename' ] = 'na.png';
+					$icon[ 'filename' ] = apply_filters('icit_weather_widget_na_icon', 'na.png');
 			} else
 				$icon[ 'filename' ] = $this->images[ $icon[ 1 ] ];
 
@@ -238,10 +251,10 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			if ( $thumb && file_exists( ICIT_WEATHER_PTH . '/images/' . str_replace(".png", "-thumb.png", $icon[ 'filename' ]) ) )
 				$icon[ 'filename' ] = str_replace(".png", "-thumb.png", $icon[ 'filename' ]);
 
-			return array(
+			return apply_filters('icit_weather_widget_check_image', array(
 						'src' => ICIT_WEATHER_URL . '/images/' . $icon[ 'filename' ],
 						'key' => $icon[ 1 ]
-						);
+					), $image, $icon, $thumb);
 		}
 
 		// convert farenheit to celsius
@@ -369,7 +382,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		function css( ) { ?>
 <!-- ICIT Weather Widget CSS -->
 <style type="text/css" media="screen" >
-#<?php echo $this->id ?> .weather-wrapper {border:solid 2px #ADC0CF;background:url('<?php echo ICIT_WEATHER_URL; ?>/images/background.png') repeat-x bottom left #F4FFFF;text-align:center;position:relative;padding:10px 10px 10px 10px;margin: 20px 0;/* CSS 3 Stuff */background:-webkit-gradient(linear,0% 20%,0% 100%,from(#F4FFFF),to(#d2e5f3));background:-moz-linear-gradient( 80% 100% 90deg,#d2e5f3,#F4FFFF);-moz-border-radius:5px;-moz-box-shadow:1px 1px 4px rgba(0,0,0,0.2);box-shadow:1px 1px 4px rgba(0,0,0,0.2);-webkit-border-radius:5px;-webkit-box-shadow:1px 1px 4px rgba(0,0,0,0.2);border-radius:7px;}
+#<?php echo $this->id ?> .weather-wrapper {border:solid 2px #ADC0CF;background:url('<?php echo ICIT_WEATHER_URL; ?>/images/background.png') repeat-x bottom left #F4FFFF;color:#000;text-align:center;position:relative;padding:10px 10px 10px 10px;margin: 20px 0;/* CSS 3 Stuff */background:-webkit-gradient(linear,0% 20%,0% 100%,from(#F4FFFF),to(#d2e5f3));background:-moz-linear-gradient( 80% 100% 90deg,#d2e5f3,#F4FFFF);-moz-border-radius:5px;-moz-box-shadow:1px 1px 4px rgba(0,0,0,0.2);box-shadow:1px 1px 4px rgba(0,0,0,0.2);-webkit-border-radius:5px;-webkit-box-shadow:1px 1px 4px rgba(0,0,0,0.2);border-radius:7px;}
 #<?php echo $this->id ?> .weather-wrapper .weather-location { font-weight: bold; }
 #<?php echo $this->id ?> .weather-wrapper .weather-location .weather-country { display: block; font-size: 12px; }
 #<?php echo $this->id ?> .weather-wrapper .weather-forecast { margin: 10px auto 0; width: 200px; padding: 0; list-style: none; text-align: left; background: none; }

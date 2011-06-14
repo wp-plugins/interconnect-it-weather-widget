@@ -3,8 +3,8 @@ Contributors: interconnectit, spectacula, sanchothefat
 Donate link: http://interconnectit.com/1474/wordpress-weather-widget/
 Tags: weather, widget
 Requires at least: 3.0
-Tested up to: 3.1
-Stable tag: 1.0.4
+Tested up to: 3.1.3
+Stable tag: 1.0.5
 
 An easy to use, elegant weather widget to work in most sidebar and widget locations.
 
@@ -63,6 +63,10 @@ This could be because there are no weather results returned from Google for your
 
 == Changelog ==
 
+= 1.0.5 =
+* Changed the google API call to use get_locale() which means it returns translated day names, conditions etc... when WPLANG is set or when the 'locale' filter is used. For multisite WPLANG is in the options tables.
+* Checks unit system to determine if f_to_c() needs calling. Fixes the problem of certain countries getting incorrect temperatures as no conversion was needed.
+* Images & fallback are filterable now incase google change their icon URLs again and if different icons are desired.
 
 = 1.0.4 =
 * Fixed problem with some cities being blocked by Google based on browser sig of WordPress (yes, really!) and changed sig to Chrome.
