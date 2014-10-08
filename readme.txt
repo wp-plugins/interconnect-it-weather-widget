@@ -4,7 +4,7 @@ Contributors: interconnectit, sanchothefat, AndyWalmsley, Spectacula, mim_mac
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.0
-Stable tag: 2.0
+Stable tag: 2.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -57,8 +57,10 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.1 - icit-weather-widget is now translatable.
 * 2.0 - Now uses OpenWeatherMap, new icons and customisable css.
 
 == Upgrade Notice ==
 
+* 2.1 - Translatable!
 * 2.0 - It Works!
