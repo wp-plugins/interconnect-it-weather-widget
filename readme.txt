@@ -1,6 +1,6 @@
 === ICIT Weather Widget ===
 
-Contributors: interconnectit, sanchothefat, AndyWalmsley, Spectacula, mim_mac
+Contributors: interconnectit, sanchothefat, AndyWalmsley, spectacula, mim_mc
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.0
