@@ -11,7 +11,7 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		global $iso3166;
 
 		// Get current weather info
-		$url = sprintf( 'http://api.openweathermap.org/data/2.5/weather?q=' . $city . ',' . $country . '&mode=xml&units=metric&APPID=80e6adde4b84756459e533351cb8487a'. apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'gb' );
+		$url = sprintf( 'http://api.openweathermap.org/data/2.5/weather?q=' . $city . ',' . $country . '&mode=xml&units=metric&APPID=80e6adde4b84756459e533351cb8487a'. apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
 
 		// Change the user agent string (Fixes problem with results of some country/city locations not being returned)
 		add_filter('http_headers_useragent', 'icit_change_user_agent');
@@ -23,7 +23,7 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 			return $response;
 
 		if ( wp_remote_retrieve_response_code( $response ) != 200 )
-			return new WP_Error( 'html_fetch', sprintf( __( 'HTTP response code %s', ICIT_WEATHER_DOM ), wp_remote_retrieve_response_code( $response ) ) );
+			return new WP_Error( 'html_fetch', sprintf( __( 'HTTP response code %s', 'icit_weather' ), wp_remote_retrieve_response_code( $response ) ) );
 
 
 		// Create the XML object
@@ -37,7 +37,7 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 
 		// This will trigger if we're looking for a city that doesn't exist
 		if( is_a( $data, 'SimpleXMLElement' ) && in_array( 'problem_cause', array_keys( (array) $data->children( ) ) ) )
-			return new WP_Error( 'bad_location', __( 'Most likely could not find the place you were looking for or OpenWeatherMap have broken their weather API.', ICIT_WEATHER_DOM ) );
+			return new WP_Error( 'bad_location', __( 'Most likely could not find the place you were looking for or OpenWeatherMap have broken their weather API.', 'icit_weather' ) );
 
 
 		// This will be our repository for the results.
@@ -84,7 +84,7 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 				return $response;
 
 			if ( wp_remote_retrieve_response_code( $response ) != 200 )
-				return new WP_Error( 'html_fetch', sprintf( __( 'HTTP response code %s', ICIT_WEATHER_DOM ), wp_remote_retrieve_response_code( $response ) ) );
+				return new WP_Error( 'html_fetch', sprintf( __( 'HTTP response code %s', 'icit_weather' ), wp_remote_retrieve_response_code( $response ) ) );
 
 
 			// Create the XML object

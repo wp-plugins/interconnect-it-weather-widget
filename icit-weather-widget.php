@@ -1,9 +1,9 @@
 <?php
 /*
- Plugin Name: ICIT Weather widget
+ Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.0
+ Version: 2.1
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -38,8 +38,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 	// Load translation files if they exist
 	$locale = get_locale( );
-	if ( file_exists( ICIT_WEATHER_PTH . '/lang/' . ICIT_WEATHER_DOM . '-' . $locale . '.mo' ) )
-		load_textdomain( ICIT_WEATHER_DOM, ICIT_WEATHER_PTH . '/lang/' . ICIT_WEATHER_DOM . '-' . $locale . '.mo' );
+	load_plugin_textdomain( 'icit_weather', false, dirname( __FILE__ ) . '/lang/' );
 
 	// Created from http://www.iso.org/iso/iso3166_en_code_lists.txt 15/6/2010
 	// GB changed to UK
@@ -80,8 +79,8 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		 Basic constructor.
 		*/
 		function __construct( ) {
-			$widget_ops = array( 'classname' => __CLASS__, 'description' => __( 'Show the weather from a location you specify.', ICIT_WEATHER_DOM ) );
-			$this->WP_Widget( __CLASS__, __( 'ICIT Weather', ICIT_WEATHER_DOM), $widget_ops);
+			$widget_ops = array( 'classname' => __CLASS__, 'description' => __( 'Show the weather from a location you specify.', 'icit_weather' ) );
+			$this->WP_Widget( __CLASS__, __( 'ICIT Weather', 'icit_weather'), $widget_ops);
 
 			$this->images = apply_filters('icit_weather_widget_images', $this->images );
 		}
@@ -138,9 +137,9 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				// tidy up location name
 				$location = array();
 				if ( !empty( $city ) )
-					$location[] = '<span class="weather-city">' . ucwords( $city ) . '</span>';
+					$location[] = '<span class="weather-city">' . __( ucwords( $city ), 'icit_weather' ) . '</span>';
 				if ( !empty( $country ) && array_key_exists( $country, $iso3166 ) )
-					$location[] = '<span class="weather-country">' . ucwords( strtolower( $iso3166[ $country ] ) ) . '</span>';
+					$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $country ] ) ), 'icit_weather' ) . '</span>';
 				$location = implode(" ", $location);
 				
 				?>
@@ -148,34 +147,35 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				<div class="weather-wrapper">
 					<div class="top">
 						<div class="left">
-							<div class="weather-temperature"><?php echo $celsius ? round($data[ 'current' ][ 'temperature' ] ) . '&deg;C' : round(($data[ 'current' ][ 'temperature' ] ) * 1.8 + 32 ) . '&deg;F' ; ?></div>
+							<div class="weather-temperature"><?php  echo $celsius ? round($data[ 'current' ][ 'temperature' ] ) . '&deg;C' : round( ($data[ 'current' ][ 'temperature' ] ) * 1.8 + 32 ) . '&deg;F' ; ?></div>
 							<?php if ( $breakdown ) { ?>
 								<div class="weather-condition"><?php echo ucwords( $this->get_weather( $data[ 'current' ][ 'number' ] ) ) ; ?></div>
 							<?php } ?>
 						</div>
 						<?php if ( $breakdown ) { ?>
 						<div class="right">
-							<div class="weather-wind-condition"><?php echo $mph ? 'Wind: ' . round($data[ 'current' ][ 'speed'] * 2.24 ) . 'mph ' . $data[ 'current' ][ 'direction' ] : 'Wind: ' . round($data[ 'current' ][ 'speed' ] * 3.6 ) . 'km/h ' . $data[ 'current' ][ 'direction' ]; ?></div>
-							<div class="weather-humidity"><?php echo 'Humidity: ' . $data[ 'current' ][ 'humidity' ]. '%'; ?></div>
+							<div class="weather-wind-condition"><?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round($data[ 'current' ][ 'speed'] * 2.24 ), $data[ 'current' ][ 'direction' ], round($data[ 'current' ][ 'speed' ] * 3.6 ) ); ?></div>
+							<div class="weather-humidity"><?php printf( __( 'Humidity: %s%%', 'icit_weather' ), $data[ 'current' ][ 'humidity' ] ) ; ?></div>
 						</div>
 						<?php } ?>
 						<div class="weather-icon">
 						<?php echo $this->get_icon( $data[ 'current' ][ 'number' ], $data ); ?>
 						</div>
-						<div class="weather-location"><?php echo empty( $title ) ? $location : $title; ?></div>
+						<div class="weather-location"><?php echo empty( $title ) ? sprintf( __( '%s', 'icit_weather' ), $location ) : sprintf( __( '%s', 'icit_weather' ), $title ); ?></div>
 
 					</div>
 					
 				<?php
 					// Handle extended mode
 					if ( $display == 'extended' ) {
-					$i = 0;
 				?>
 					<ul class="weather-forecast">
-						<?php foreach( $data[ 'forecast' ] as $forecast ) { ?>
+						<?php foreach( $data[ 'forecast' ] as $forecast ) {
+							$day = date_i18n( 'D', strtotime( $forecast[ 'time' ] ) )
+						?>
 						<li>
 							<div class="weather-day">
-								<strong><?php echo $i == 0 ? __( date( 'D', strtotime( $forecast[ 'time' ] ) ) , ICIT_WEATHER_DOM) : $day; ?></strong>
+								<strong><?php  printf( __( '%s', 'icit_weather' ), $day ) ; ?></strong>
 							</div>
 							
 							<div class="temp">
@@ -191,12 +191,13 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 	
 				<?php } ?>
 
-					<!-- <?php printf( __( 'Last updated at %1$s on %2$s', ICIT_WEATHER_DOM ), date( get_option( 'time_format' ), $updated ), date( get_option( 'date_format' ), $updated ) ) ; ?> -->
+					<!-- <?php printf( __( 'Last updated at %1$s on %2$s', 'icit_weather' ), date( get_option( 'time_format' ), $updated ), date( get_option( 'date_format' ), $updated ) ) ; ?> -->
 				</div>  <?php
 				
 
 				if ( $credit ) {
-						echo '<p class="icit-credit-link">'. __( 'Weather Widget by <a href="http://interconnectit.com/" title="Wordpress Development Specialists">interconnect/it</a>', ICIT_WEATHER_DOM ) .'</p>';
+					$interconnect = '<a href="http://interconnectit.com/" title="Wordpress Development Specialists">interconnect/<strong>it</strong></a>';
+					printf( '<p class="icit-credit-link">'. __( 'Weather Widget by %s', 'icit_weather' ) .'</p>', $interconnect );
 				}
 				
 				echo $after_widget; 
@@ -317,7 +318,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			} else {
 				foreach( array_reverse( $weather, true ) as $key => $name ) {
 					if ( intval( $id ) > intval( $key ) ) {
-						$condition = $name;
+						$condition = sprintf( __( '%s', 'icit_weather' ), $name );
 						break;
 					}
 				}
@@ -382,88 +383,88 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			extract( $instance, EXTR_SKIP );?>
 
 			<p>
-				<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', ICIT_WEATHER_DOM )?></label>
+				<label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title:', 'icit_weather' )?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
-				<em><?php _e( 'This will override the display of the city name.', ICIT_WEATHER_DOM ); ?></em>
+				<em><?php _e( 'This will override the display of the city name.', 'icit_weather' ); ?></em>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id( 'country' ); ?>"><?php _e( 'Choose the country:', ICIT_WEATHER_DOM )?></label>
+				<label for="<?php echo $this->get_field_id( 'country' ); ?>"><?php _e( 'Choose the country:', 'icit_weather' )?></label>
 				<select id="<?php echo $this->get_field_id( 'country' ); ?>" name="<?php echo $this->get_field_name( 'country' ); ?>" class="widefat"><?php
 					global $iso3166;
 					foreach( ( array ) $iso3166 as $code => $country_name ) { ?>
-						<option value="<?php echo esc_attr( $code ); ?>" <?php echo selected( strtolower( $country ), strtolower( $code ) )?>><?php echo htmlentities2( ucwords( strtolower( $country_name ) ), ENT_QUOTES, get_bloginfo( 'charset' ) ) ?></option><?php
+						<option value="<?php echo esc_attr( $code ); ?>" <?php echo selected( strtolower( $country ), strtolower( $code ) )?>><?php echo htmlentities2( ucwords( strtolower( sprintf( __(  '%s', 'icit_weather' ), $country_name ) ) ), ENT_QUOTES, get_bloginfo( 'charset' ) ) ?></option><?php
 					}?>
 				</select>
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id( 'city' ); ?>"><?php _e( 'City, town, postcode or zip code:', ICIT_WEATHER_DOM )?></label>
+				<label for="<?php echo $this->get_field_id( 'city' ); ?>"><?php _e( 'City, town, postcode or zip code:', 'icit_weather' )?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'city' ); ?>" name="<?php echo $this->get_field_name( 'city' ); ?>" type="text" value="<?php echo esc_attr( $city ); ?>" />
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id( 'display' ); ?>"><?php _e( 'Widget display:', ICIT_WEATHER_DOM )?></label>
+				<label for="<?php echo $this->get_field_id( 'display' ); ?>"><?php _e( 'Widget display:', 'icit_weather' )?></label>
 				<select id="<?php echo $this->get_field_id( 'display' ); ?>" name="<?php echo $this->get_field_name( 'display' ); ?>" class="widefat">
-					<option <?php selected( $display, 'compact' ); ?> value="compact"><?php _e('Compact', ICIT_WEATHER_DOM); ?></option>
-					<option <?php selected( $display, 'extended' ); ?> value="extended"><?php _e('Extended', ICIT_WEATHER_DOM); ?></option>
+					<option <?php selected( $display, 'compact' ); ?> value="compact"><?php _e('Compact', 'icit_weather'); ?></option>
+					<option <?php selected( $display, 'extended' ); ?> value="extended"><?php _e('Extended', 'icit_weather'); ?></option>
 				</select>
 			</p>
 			
 			<p>
-				<label for="<?php echo $this->get_field_id( 'background_day' ); ?>"><?php _e( 'Background colour during day:', ICIT_WEATHER_DOM )?></label>
+				<label for="<?php echo $this->get_field_id( 'background_day' ); ?>"><?php _e( 'Background colour during day:', 'icit_weather' )?></label>
 				<input class="widefat color-picker" id="<?php echo $this->get_field_id( 'background_day' ); ?>" name="<?php echo $this->get_field_name( 'background_day' ); ?>" type="text" value="<?php echo esc_attr( $background_day ); ?>" />
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id( 'background_night' ); ?>"><?php _e( 'Background colour during night:', ICIT_WEATHER_DOM )?></label>
+				<label for="<?php echo $this->get_field_id( 'background_night' ); ?>"><?php _e( 'Background colour during night:', 'icit_weather' )?></label>
 				<input class="widefat color-picker" id="<?php echo $this->get_field_id( 'background_night' ); ?>" name="<?php echo $this->get_field_name( 'background_night' ); ?>" type="text" value="<?php echo esc_attr( $background_night ); ?>" />
 			</p>
 			
 			<p>
-				<label for="<?php echo $this->get_field_id( 'frequency' ); ?>"><?php _e( 'How often do we check the weather (mins):', ICIT_WEATHER_DOM )?></label>
+				<label for="<?php echo $this->get_field_id( 'frequency' ); ?>"><?php _e( 'How often do we check the weather (mins):', 'icit_weather' )?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'frequency' ); ?>" name="<?php echo $this->get_field_name( 'frequency' ); ?>" type="text" value="<?php echo esc_attr( $frequency ); ?>" />
 			</p>
 
 			<p>
 				<label for="<?php echo $this->get_field_id( 'celsius' ); ?>">
 					<input type="checkbox" name="<?php echo $this->get_field_name( 'celsius' ); ?>" id="<?php echo $this->get_field_id( 'celsius' ); ?>" value="1" <?php echo checked( $celsius ); ?>/>
-					<?php _e( 'Show temperature in celsius', ICIT_WEATHER_DOM ); ?>
+					<?php _e( 'Show temperature in celsius', 'icit_weather' ); ?>
 				</label>
 			</p>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'breakdown' ); ?>">
 					<input type="checkbox" name="<?php echo $this->get_field_name( 'breakdown' ); ?>" id="<?php echo $this->get_field_id( 'breakdown' ); ?>" value="1" <?php echo checked( $breakdown ); ?>/>
-					<?php _e( 'Show weather breakdown', ICIT_WEATHER_DOM ); ?>
+					<?php _e( 'Show weather breakdown', 'icit_weather' ); ?>
 				</label>
 			</p>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'mph' ); ?>">
 					<input type="checkbox" name="<?php echo $this->get_field_name( 'mph' ); ?>" id="<?php echo $this->get_field_id( 'mph' ); ?>" value="1" <?php echo checked( $mph ); ?>/>
-					<?php _e( 'Show wind speed in mph', ICIT_WEATHER_DOM ); ?>
+					<?php _e( 'Show wind speed in mph', 'icit_weather' ); ?>
 				</label>
 			</p>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'css' ); ?>">
 					<input type="checkbox" name="<?php echo $this->get_field_name( 'css' ); ?>" id="<?php echo $this->get_field_id( 'css' ); ?>" value="1" <?php echo checked( $css ); ?>/>
-					<?php _e( 'Output CSS', ICIT_WEATHER_DOM ); ?>
+					<?php _e( 'Output CSS', 'icit_weather' ); ?>
 				</label>
 			</p>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'credit' ); ?>">
 					<input type="checkbox" name="<?php echo $this->get_field_name( 'credit' ); ?>" id="<?php echo $this->get_field_id( 'credit' ); ?>" value="1" <?php echo checked( $credit ); ?>/>
-					<?php _e( 'Show Interconnect IT credit link', ICIT_WEATHER_DOM ); ?>
+					<?php _e( 'Show interconnect/it credit link', 'icit_weather' ); ?>
 				</label>
 			</p>
 
 			<?php do_action('icit_weather_widget_form', $instance); ?>
 
-			<p><em><?php printf( $updated > 0 ? __( 'Last updated "%1$s". Current server time is "%2$s".', ICIT_WEATHER_DOM ) : __( 'Will update when the frontend is next loaded. Current server time is %2$s.', ICIT_WEATHER_DOM ), date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $updated), date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time( ) ) ); ?></em></p> <?php
+			<p><em><?php printf( $updated > 0 ? __( 'Last updated "%1$s". Current server time is "%2$s".', 'icit_weather' ) : __( 'Will update when the frontend is next loaded. Current server time is %2$s.', 'icit_weather' ), date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $updated), date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), time( ) ) ); ?></em></p> <?php
 
 			if ( ! empty( $instance[ 'errors' ] ) ) { ?>
 			<div style="background-color: #FFEBE8;border:solid 1px #C00;padding:5px">
-				<p><?php printf( __( 'The last error occured at "%s" with the message "%s".', ICIT_WEATHER_DOM ), date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $instance[ 'errors' ][ 'time' ] ), $instance[ 'errors' ][ 'message' ] ) ?></p>
-				<label for="<?php echo $this->get_field_id( 'clear_errors' ); ?>"><?php _e( 'Clear errors: ', ICIT_WEATHER_DOM );?>
+				<p><?php printf( __( 'The last error occured at "%s" with the message "%s".', 'icit_weather' ), date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $instance[ 'errors' ][ 'time' ] ), $instance[ 'errors' ][ 'message' ] ) ?></p>
+				<label for="<?php echo $this->get_field_id( 'clear_errors' ); ?>"><?php _e( 'Clear errors: ', 'icit_weather' );?>
 					<input type="checkbox" name="<?php echo $this->get_field_name( 'clear_errors' ); ?>" id="<?php echo $this->get_field_id( 'clear_errors' ); ?>" value="1" />
 				</label>
 			</div>
