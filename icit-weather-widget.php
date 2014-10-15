@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.1
+ Version: 2.1.1
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -137,7 +137,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				// tidy up location name
 				$location = array();
 				if ( !empty( $city ) )
-					$location[] = '<span class="weather-city">' . __( ucwords( $city ), 'icit_weather' ) . '</span>';
+					$location[] = '<span class="weather-city">' . __( ucwords( $data[ 'current' ][ 'city' ] ), 'icit_weather' ) . '</span>';
 				if ( !empty( $country ) && array_key_exists( $country, $iso3166 ) )
 					$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $country ] ) ), 'icit_weather' ) . '</span>';
 				$location = implode(" ", $location);

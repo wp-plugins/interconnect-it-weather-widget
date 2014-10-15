@@ -44,6 +44,7 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		$output = array( );
 
 		// Extract the current conditions from the feed and declare variables for attributes.
+		$current_city = $data->xpath( 'city' );
 		$current_temp = $data->xpath( 'temperature' );
 		$current_hum = $data->xpath( 'humidity' );
 		$current_windSpeed = $data->xpath( 'wind/speed' );
@@ -51,6 +52,9 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		$current_weather = $data->xpath( 'weather' );
 		$current_sun = $data->xpath( 'city/sun' );
 		
+		foreach( $current_city as $value ) {
+			$output[ 'current' ][ $value->getName( ) ] = ( string ) $value->attributes( )->name;
+		}
 		foreach( $current_temp as $value ) {
 			$output[ 'current' ][ $value->getName( ) ] = ( string ) $value->attributes( );
 		}
