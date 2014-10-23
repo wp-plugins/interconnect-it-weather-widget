@@ -11,112 +11,64 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		global $iso3166;
 
 		// Get current weather info
-		$url = sprintf( 'http://api.openweathermap.org/data/2.5/weather?q=' . $city . ',' . $country . '&mode=xml&units=metric&APPID=80e6adde4b84756459e533351cb8487a'. apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+		$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?q=$city,$country&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+		
+		// Create JSON array
+		$content = file_get_contents( $url );
+		$json = json_decode( $content, true );
 
 		// Change the user agent string (Fixes problem with results of some country/city locations not being returned)
 		add_filter('http_headers_useragent', 'icit_change_user_agent');
 
-		// Collect the HTML file
-		$response = wp_remote_request( $url );
-		// Check the headers
-		if ( is_wp_error( $response ) )
-			return $response;
-
-		if ( wp_remote_retrieve_response_code( $response ) != 200 )
-			return new WP_Error( 'html_fetch', sprintf( __( 'HTTP response code %s', 'icit_weather' ), wp_remote_retrieve_response_code( $response ) ) );
-
-
-		// Create the XML object
-		$xml = wp_remote_retrieve_body( $response );
-
-		try {
-			$data = new SimpleXMLElement( $xml, LIBXML_NOCDATA );
-		} catch ( Exception $e ) {
-			return new WP_Error( 'xml_parse', $e->getMessage( ) );
-		}
-
-		// This will trigger if we're looking for a city that doesn't exist
-		if( is_a( $data, 'SimpleXMLElement' ) && in_array( 'problem_cause', array_keys( (array) $data->children( ) ) ) )
-			return new WP_Error( 'bad_location', __( 'Most likely could not find the place you were looking for or OpenWeatherMap have broken their weather API.', 'icit_weather' ) );
-
-
 		// This will be our repository for the results.
 		$output = array( );
 
-		// Extract the current conditions from the feed and declare variables for attributes.
-		$current_city = $data->xpath( 'city' );
-		$current_temp = $data->xpath( 'temperature' );
-		$current_hum = $data->xpath( 'humidity' );
-		$current_windSpeed = $data->xpath( 'wind/speed' );
-		$current_windDirection = $data->xpath( 'wind/direction' );
-		$current_weather = $data->xpath( 'weather' );
-		$current_sun = $data->xpath( 'city/sun' );
+		// Break if OpenWeatherMap returns an error
+		if ( isset( $json[ 'message' ] ) ) {
+			
+			$output [ 'error' ] = $json[ 'message' ];
+			return $output;
 		
-		foreach( $current_city as $value ) {
-			$output[ 'current' ][ $value->getName( ) ] = ( string ) $value->attributes( )->name;
+		} else {
+			
+			$output[ 'current' ][ 'city' ] = ( string ) $json[ 'name' ];
+			$output[ 'current' ][ 'country' ] = ( string ) $json[ 'sys' ][ 'country' ];
+			$output[ 'current' ][ 'temperature' ] = ( string ) $json[ 'main' ][ 'temp' ];
+			$output[ 'current' ][ 'humidity' ] = ( string ) $json[ 'main' ][ 'humidity' ];
+			$output[ 'current' ][ 'speed' ] = ( string ) $json[ 'wind' ][ 'speed' ];
+			$output[ 'current' ][ 'direction' ] = ( string ) $json[ 'wind' ][ 'deg' ];
+			$output[ 'current' ][ 'number' ] = ( string ) $json[ 'weather' ][ 0 ][ 'id' ];
+			$output[ 'current' ][ 'rise' ] = ( string ) $json[ 'sys' ][ 'sunrise' ];
+			$output[ 'current' ][ 'set' ] = ( string ) $json[ 'sys' ][ 'sunset' ];
+			
 		}
-		foreach( $current_temp as $value ) {
-			$output[ 'current' ][ $value->getName( ) ] = ( string ) $value->attributes( );
-		}
-		foreach( $current_hum as $value ) {
-			$output[ 'current' ][ $value->getName( ) ] = ( string ) $value->attributes( );
-		}
-		foreach( $current_windSpeed as $value ) {
-			$output[ 'current' ][ $value->getName( ) ] = ( string ) $value->attributes( );
-		}
-		foreach( $current_windDirection as $value ) {
-			$output[ 'current' ][ $value->getName( ) ] = ( string ) $value->attributes( )->code;
-		}
-		foreach( $current_weather as $value ) {
-			$output[ 'current' ][ 'number' ] = ( string ) $value->attributes( )->number;
-		}
-		foreach( $current_sun as $value ) {
-			$output[ 'current' ][ 'rise' ] = ( string ) $value->attributes( )->rise;
-			$output[ 'current' ][ 'set' ] = ( string ) $value->attributes( )->set;
-		}
-
+		
 		// If we've asked for the extended forecast then process that too.
 		if ( $extended ) {
 
 			// Get next three day forecast
-			$url = sprintf( 'http://api.openweathermap.org/data/2.5/forecast/daily?q=' . $city . ',' . $country . '&mode=xml&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a'. apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'gb' );
+			$url = sprintf( "http://api.openweathermap.org/data/2.5/forecast/daily?q=$city,$country&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
 			
-			// Collect the HTML file
-			$response = wp_remote_request($url );
-			// Check the headers
-			if ( is_wp_error( $response ) )
-				return $response;
-
-			if ( wp_remote_retrieve_response_code( $response ) != 200 )
-				return new WP_Error( 'html_fetch', sprintf( __( 'HTTP response code %s', 'icit_weather' ), wp_remote_retrieve_response_code( $response ) ) );
-
-
-			// Create the XML object
-			$xml = wp_remote_retrieve_body($response);
-
-			try {
-				$data = new SimpleXMLElement( $xml, LIBXML_NOCDATA );
-			} catch ( Exception $e ) {
-				return new WP_Error( 'xml_parse', $e->getMessage( ) );
-			}
+			// Create JSON array
+			$content = file_get_contents( $url );
+			$json = json_decode( $content, true );
 
 			// Extract the forecast info from the feed and declare variables for attributes.
 			$output[ 'forecast' ] = array( );
-			foreach ( $data->xpath( 'forecast/time' ) as $i => $forecast ) {
+			foreach ( $json[ 'list' ] as $i => $forecast ) {
 				if ( $i == 0 )
 					continue;
 				
-				$forecast_output = array( );
+				$forecast_output = array();
 				
-				$forecast_output[ $forecast->getName( ) ] = ( string ) $forecast->attributes( )->day;
-				foreach( $forecast->xpath( 'symbol' ) as $day_data ) {
-					$forecast_output[ 'number' ] = ( string ) $day_data->attributes( )->number;
-				}
-				foreach( $forecast->xpath( 'temperature' ) as $day_data ) {
-					$forecast_output[ $day_data->getName( ) ] = ( string ) $day_data->attributes( )->day;
-				}
+				$forecast_output[ 'time' ] = ( string ) $forecast[ 'dt' ];
+				$forecast_output[ 'number' ] = ( string ) $forecast[ 'weather' ][ 0 ][ 'id' ];
+				$forecast_output[ 'temperature' ] = ( string ) $forecast[ 'temp' ][ 'day' ];
+				
 				$output[ 'forecast' ][ ] = $forecast_output;
+				
 			}
+			
 		}
 
 		return $output;

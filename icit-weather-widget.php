@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.1.1
+ Version: 2.2
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -89,7 +89,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		function widget( $args, $instance  ) {
 			global $iso3166;
 			
-			// Include icon fonts	
+			// Include icon fonts
 			wp_enqueue_style('miriam86', ICIT_WEATHER_URL. '/images/miriam86/style.css');		
 				
 			extract( $args, EXTR_SKIP );
@@ -102,7 +102,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				// We need to run an update on the data
 				$all_args = get_option( $this->option_name );
 
-				$results = icit_fetch_open_weather( $city, $country, $display == 'extended' );
+				$results = icit_fetch_open_weather( $city, $country, $display );
 
 				if ( ! is_wp_error( $results ) ) {
 					$data = $all_args[ $this->number ][ 'data' ] = $results;
@@ -121,6 +121,11 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 			if ( ! empty( $data ) ) {
 
+				if ( isset( $data[ 'error' ] ) ) { ?>
+					<p>An error has occured with the ICIT Weather Widget, check your settings to make sure the city you are searching for exists.</p>
+					<?php return;
+				}
+				
 				// check the widget has class name and id
 				if ( !preg_match('/class=\"/', $before_widget) )
 					$before_widget = preg_replace("/^\<([a-zA-Z]+)/", '<$1 class="weather-widget"', $before_widget);
@@ -136,10 +141,24 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 					
 				// tidy up location name
 				$location = array();
-				if ( !empty( $city ) )
-					$location[] = '<span class="weather-city">' . __( ucwords( $data[ 'current' ][ 'city' ] ), 'icit_weather' ) . '</span>';
-				if ( !empty( $country ) && array_key_exists( $country, $iso3166 ) )
-					$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $country ] ) ), 'icit_weather' ) . '</span>';
+				$weather_city = $data[ 'current' ][ 'city' ];
+				$weather_country = $data[ 'current' ][ 'country' ];
+				
+				// Display city name
+				if ( !empty( $weather_city ) )
+					$location[] = '<span class="weather-city">' . __( ucwords( $weather_city ), 'icit_weather' ) . '</span>';
+				
+				// Display country name from iso or what is returned by OpenWeatherMap
+				if ( !empty( $weather_country ) && array_key_exists( $weather_country, $iso3166 ) ) {
+					$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $weather_country ] ) ), 'icit_weather' ) . '</span>';
+				} else {
+					if ( strlen( $weather_country ) == 2 && array_key_exists( $country, $iso3166 ) ) {
+						$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $country ] ) ), 'icit_weather' ) . '</span>';
+					} else {
+						$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $weather_country ) ), 'icit_weather' ) . '</span>';
+					}
+				}
+				
 				$location = implode(" ", $location);
 				
 				?>
@@ -154,7 +173,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 						</div>
 						<?php if ( $breakdown ) { ?>
 						<div class="right">
-							<div class="weather-wind-condition"><?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round($data[ 'current' ][ 'speed'] * 2.24 ), $data[ 'current' ][ 'direction' ], round($data[ 'current' ][ 'speed' ] * 3.6 ) ); ?></div>
+							<div class="weather-wind-condition"><?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round( $data[ 'current' ][ 'speed'] * 2.24 ), $this->get_direction( $data[ 'current' ][ 'direction' ] ), round( $data[ 'current' ][ 'speed' ] * 3.6 ) ); ?></div>
 							<div class="weather-humidity"><?php printf( __( 'Humidity: %s%%', 'icit_weather' ), $data[ 'current' ][ 'humidity' ] ) ; ?></div>
 						</div>
 						<?php } ?>
@@ -171,7 +190,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				?>
 					<ul class="weather-forecast">
 						<?php foreach( $data[ 'forecast' ] as $forecast ) {
-							$day = date_i18n( 'D', strtotime( $forecast[ 'time' ] ) )
+							$day = date_i18n( 'D', $forecast[ 'time' ] )
 						?>
 						<li>
 							<div class="weather-day">
@@ -188,12 +207,11 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 						</li>
 						<?php } ?>
 					</ul>
-	
+
 				<?php } ?>
 
 					<!-- <?php printf( __( 'Last updated at %1$s on %2$s', 'icit_weather' ), date( get_option( 'time_format' ), $updated ), date( get_option( 'date_format' ), $updated ) ) ; ?> -->
-				</div>  <?php
-				
+				</div> <?php
 
 				if ( $credit ) {
 					$interconnect = '<a href="http://interconnectit.com/" title="Wordpress Development Specialists">interconnect/<strong>it</strong></a>';
@@ -201,7 +219,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				}
 				
 				echo $after_widget; 
-					 
+			
 			}
 		}
 
@@ -225,6 +243,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				903 => 'Snow',
 				904 => 'Sun',
 				906 => 'Hail'
+				
 			);
 			
 			if ( isset( $icons[ $id ] ) ) {
@@ -250,6 +269,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			}
 			
 			return '<i class="wicon-' . $icon . '"></i>';
+		
 		}
 		
 		// Determine whether it is night or day
@@ -259,9 +279,9 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			
 			if ( $data ) {
 			
-				$time = mktime( );
-				$rise = strtotime( $data[ 'current' ][ 'rise' ] );
-				$set = strtotime( $data[ 'current' ][ 'set' ] );
+				$time = time( );
+				$rise = $data[ 'current' ][ 'rise' ];
+				$set = $data[ 'current' ][ 'set' ];
 				
 				if ( $time > $set || $time < $rise ) {
 					$night = true;
@@ -269,6 +289,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			}
 			
 			return $night;
+		
 		}
 		
 		// Map weather id to the weather condition to display
@@ -311,6 +332,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				954 => 'breeze',
 				957 => 'strong winds',
 				960 => 'storm'
+				
 			);
 			
 			if ( isset( $weather[ $id] ) ) {
@@ -327,6 +349,41 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			return $condition;
 		}
 		
+		// Map direction of wind from degrees to letters
+		function get_direction( $deg ) {
+			
+			$directions = array(
+				
+				0 => 'N',
+				11.25 => 'NNE',
+				33.75 => 'NE',
+				56.25 => 'ENE',
+				78.75 => 'E',
+				101.25 => 'ESE',
+				123.75 => 'SE',
+				146.25 => 'SSE',
+				168.75 => 'S',
+				191.25 => 'SSW',
+				213.75 => 'SW',
+				236.25 => 'WSW',
+				258.75 => 'W',
+				281.25 => 'WNW',
+				303.75 => 'NW',
+				326.25 => 'NNW',
+				348.75 => 'N'
+				
+			);
+			
+			foreach( array_reverse( $directions, true ) as $key => $dir ) {
+				if ( intval( $deg ) > intval( $key ) ) {
+					$direction = sprintf( __( '%s', 'icit_weather' ), $dir );
+					break;
+				}
+			}
+			
+			return $direction;
+		
+		}
 
 		/*
 		 * @param $image = the image path returned by the OpenWeather API
@@ -334,6 +391,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		 * @return array( 'src' => filename, 'key' => $this->images array key )
 		 */
 		function check_image( $image, $thumb = false ) {
+			
 			// Break the file name into 2 parts name and ext. The array will have basename, name and ext
 			preg_match( '/(.*)\.([a-zA-Z0-9]{3,4}$)/is', basename( $image ), $icon );
 
@@ -355,14 +413,17 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 						'src' => ICIT_WEATHER_URL . '/images/' . $icon[ 'filename' ],
 						'key' => $icon[ 1 ]
 					), $image, $icon, $thumb);
+		
 		}
 		
 		function add_error( $error  = '') {
+			
 			$all_args = get_option( $this->option_name );
 			$all_args[ $this->number ][ 'errors' ] = array( 'time' => time( ), 'message' => is_wp_error( $error ) ? $error->get_error_message( ) : ( string ) $error );
 
 			if( ! update_option( $this->option_name, $all_args ) )
 				add_option( $this->option_name, $all_args );
+			
 		}
 
 
@@ -399,7 +460,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			</p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id( 'city' ); ?>"><?php _e( 'City, town, postcode or zip code:', 'icit_weather' )?></label>
+				<label for="<?php echo $this->get_field_id( 'city' ); ?>"><?php _e( 'City, town, or city ID:', 'icit_weather' )?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'city' ); ?>" name="<?php echo $this->get_field_name( 'city' ); ?>" type="text" value="<?php echo esc_attr( $city ); ?>" />
 			</p>
 
@@ -475,6 +536,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 		// Update to new settings
 		function update( $new_instance, $old_instance = array( ) ) {
+			
 			global $iso3166;
 
 			$instance[ 'title' ] = sanitize_text_field( $new_instance[ 'title' ] );
@@ -501,6 +563,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			do_action( 'icit_weather_widget_update', $new_instance, $old_instance, $instance );
 			
 			return $instance;
+		
 		}
 
 
