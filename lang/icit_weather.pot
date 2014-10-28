@@ -1,150 +1,145 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: ICIT Weather Widget\n"
-"POT-Creation-Date: 2014-08-22 16:33-0000\n"
-"PO-Revision-Date: 2014-08-22 17:33-0000\n"
+"POT-Creation-Date: 2014-10-24 10:10-0000\n"
+"PO-Revision-Date: 2014-10-24 10:12-0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.8\n"
-"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.6.10\n"
+"X-Poedit-Basepath: ..\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
 "esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPath-1: ..\n"
 
-#: ../icit-weather-widget.php:82
+#: icit-weather-widget.php:82
 msgid "Show the weather from a location you specify."
 msgstr ""
 
-#: ../icit-weather-widget.php:83
+#: icit-weather-widget.php:83
 msgid "ICIT Weather"
 msgstr ""
 
-#: ../icit-weather-widget.php:157
+#: icit-weather-widget.php:125
+msgid ""
+"<p>An error has occured with the ICIT Weather Widget, check your settings to "
+"make sure the city you are searching for exists.</p>"
+msgstr ""
+
+#: icit-weather-widget.php:176
 #, php-format
 msgid "Wind: %1$smph %2$s"
 msgstr ""
 
-#: ../icit-weather-widget.php:157
+#: icit-weather-widget.php:176
 #, php-format
 msgid "Wind: %3$skm/h %2$s"
 msgstr ""
 
-#: ../icit-weather-widget.php:158
+#: icit-weather-widget.php:177
 #, php-format
 msgid "Humidity: %s%%"
 msgstr ""
 
-#: ../icit-weather-widget.php:164 ../icit-weather-widget.php:178
-#: ../icit-weather-widget.php:321 ../icit-weather-widget.php:396
+#: icit-weather-widget.php:183 icit-weather-widget.php:197
+#: icit-weather-widget.php:339 icit-weather-widget.php:343
+#: icit-weather-widget.php:379 icit-weather-widget.php:457
 #, php-format
 msgid "%s"
 msgstr ""
 
-#: ../icit-weather-widget.php:194
+#: icit-weather-widget.php:213
 #, php-format
 msgid "Last updated at %1$s on %2$s"
 msgstr ""
 
-#: ../icit-weather-widget.php:200
+#: icit-weather-widget.php:218
 #, php-format
 msgid "Weather Widget by %s"
 msgstr ""
 
-#: ../icit-weather-widget.php:386
+#: icit-weather-widget.php:447
 msgid "Title:"
 msgstr ""
 
-#: ../icit-weather-widget.php:388
+#: icit-weather-widget.php:449
 msgid "This will override the display of the city name."
 msgstr ""
 
-#: ../icit-weather-widget.php:392
+#: icit-weather-widget.php:453
 msgid "Choose the country:"
 msgstr ""
 
-#: ../icit-weather-widget.php:402
-msgid "City, town, postcode or zip code:"
+#: icit-weather-widget.php:463
+msgid "City, town, or city ID:"
 msgstr ""
 
-#: ../icit-weather-widget.php:407
+#: icit-weather-widget.php:468
 msgid "Widget display:"
 msgstr ""
 
-#: ../icit-weather-widget.php:409
+#: icit-weather-widget.php:470
 msgid "Compact"
 msgstr ""
 
-#: ../icit-weather-widget.php:410
+#: icit-weather-widget.php:471
 msgid "Extended"
 msgstr ""
 
-#: ../icit-weather-widget.php:415
+#: icit-weather-widget.php:476
 msgid "Background colour during day:"
 msgstr ""
 
-#: ../icit-weather-widget.php:420
+#: icit-weather-widget.php:481
 msgid "Background colour during night:"
 msgstr ""
 
-#: ../icit-weather-widget.php:425
+#: icit-weather-widget.php:486
 msgid "How often do we check the weather (mins):"
 msgstr ""
 
-#: ../icit-weather-widget.php:432
+#: icit-weather-widget.php:493
 msgid "Show temperature in celsius"
 msgstr ""
 
-#: ../icit-weather-widget.php:438
+#: icit-weather-widget.php:499
 msgid "Show weather breakdown"
 msgstr ""
 
-#: ../icit-weather-widget.php:444
+#: icit-weather-widget.php:505
 msgid "Show wind speed in mph"
 msgstr ""
 
-#: ../icit-weather-widget.php:450
+#: icit-weather-widget.php:511
 msgid "Output CSS"
 msgstr ""
 
-#: ../icit-weather-widget.php:456
+#: icit-weather-widget.php:517
 msgid "Show interconnect/it credit link"
 msgstr ""
 
-#: ../icit-weather-widget.php:462
+#: icit-weather-widget.php:523
 #, php-format
 msgid "Last updated \"%1$s\". Current server time is \"%2$s\"."
 msgstr ""
 
-#: ../icit-weather-widget.php:462
+#: icit-weather-widget.php:523
 #, php-format
 msgid ""
 "Will update when the frontend is next loaded. Current server time is %2$s."
 msgstr ""
 
-#: ../icit-weather-widget.php:466
+#: icit-weather-widget.php:527
 #, php-format
 msgid "The last error occured at \"%s\" with the message \"%s\"."
 msgstr ""
 
-#: ../icit-weather-widget.php:467
+#: icit-weather-widget.php:528
 msgid "Clear errors: "
-msgstr ""
-
-#: ../includes/helpers.php:26 ../includes/helpers.php:87
-#, php-format
-msgid "HTTP response code %s"
-msgstr ""
-
-#: ../includes/helpers.php:40
-msgid ""
-"Most likely could not find the place you were looking for or OpenWeatherMap "
-"have broken their weather API."
 msgstr ""

@@ -4,7 +4,7 @@ Contributors: interconnectit, sanchothefat, AndyWalmsley, spectacula, mim_mc
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.0
-Stable tag: 2.2
+Stable tag: 2.2.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,8 @@ The widget can be configured as follows:
 
 You can override what gets displayed for the location by filling in the widget's title text.
 
+For info on how to use the shortcode, check the FAQs.
+
 == Installation ==
 
 1. You can install the plugin using the auto-install tool from the WordPress back-end.
@@ -41,6 +43,24 @@ You can override what gets displayed for the location by filling in the widget's
 = The Widget is Not Displaying =
 
 This could be because there are no weather results returned from OpenWeatherMap for your region or area. You can try being less specific eg. by entering the name of your nearest City rather than Town but if you feel there is a mistake please let us know.
+
+= Using the shortcode =
+
+Put the following shortcode in your post or page to diplay the widget there instead of a widget space: [icit_weather]
+The shortcode can take the following parameters (value in brackets is the default if parameter is left out):
+
+* title - Text to override the city/country name ("")
+* city - City to search the weather for ("Liverpool")
+* country - Country the city is in ("UK")
+* celsius - true/false whether to show temperature in celcius ("true")
+* breakdown - true/false whether you want breakdown of wind and humidity ("true")
+* mph - true/false show wind speed in mph or km/h ("true")
+* display - 'compact' show just current weather / 'extended' show the next 3 day forecast ("compact")
+* background_day - Colour of background during day ("#FF7C80")
+* background_night - Colour of background during night ("#FF7C80")
+
+For example:
+[icit_weather city="Liverpool" country="UK" celsius="true" breakdown="false" display="compact" background_day="red" background_night="rgb(129,160,255)"]
 
 == Known problems ==
 
@@ -57,6 +77,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.2.1 - Added shortcode
 * 2.2 - Changed api from using xml to json
 * 2.1.1 - City name is now returned from OpenWeatherMap
 * 2.1 - icit-weather-widget is now translatable.
@@ -64,6 +85,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Upgrade Notice ==
 
+* 2.2.1 Shortcode has been added
 * 2.2 - You (hopefully) won't notice any difference except for a better error message
 * 2.1.1 - Bugfix!
 * 2.1 - Translatable!

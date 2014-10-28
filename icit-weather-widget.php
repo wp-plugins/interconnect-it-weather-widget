@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.2
+ Version: 2.2.1
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -57,20 +57,20 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		var $defaults = array(
 			'title' => '',
 			'city' => 'Liverpool',
-			'frequency' => 60,
+			'country' => 'UK',
 			'celsius' => true,
 			'breakdown' => true,
 			'mph' => true,
 			'display' => 'compact',
 			'credit' => true,
-			'data' => array( ),
-			'updated' => 0,
-			'errors' => false,
-			'country' => 'UK',
-			'clear_errors' => false,
 			'css' => true,
 			'background_day' => '#FF7C80',
-			'background_night' => '#FF7C80'
+			'background_night' => '#FF7C80',
+			'data' => array( ),
+			'frequency' => 60,
+			'updated' => 0,
+			'errors' => false,
+			'clear_errors' => false
 		);
 
 		var $data = array();
@@ -83,8 +83,28 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			$this->WP_Widget( __CLASS__, __( 'ICIT Weather', 'icit_weather'), $widget_ops);
 
 			$this->images = apply_filters('icit_weather_widget_images', $this->images );
+			
+			add_shortcode( 'icit_weather', array( $this, 'icit_weather_shortcode' ) );
 		}
 
+		function icit_weather_shortcode( $attributes ) {
+			
+			$attributes = shortcode_atts( $this->defaults, $attributes );
+			if ( $attributes[ 'celsius' ] === "false" )
+				$attributes[ 'celsius' ] = false;
+			if ( $attributes[ 'breakdown' ] === "false" )
+				$attributes[ 'breakdown' ] = false;
+			if ( $attributes[ 'mph' ] === "false" )
+				$attributes[ 'mph' ] = false;
+			
+			
+			ob_start();
+			the_widget( 'icit_weather_widget', $attributes );
+			$widget = ob_get_clean();
+		
+			return $widget;
+		
+		}
 
 		function widget( $args, $instance  ) {
 			global $iso3166;
@@ -121,9 +141,9 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 			if ( ! empty( $data ) ) {
 
-				if ( isset( $data[ 'error' ] ) ) { ?>
-					<p>An error has occured with the ICIT Weather Widget, check your settings to make sure the city you are searching for exists.</p>
-					<?php return;
+				if ( isset( $data[ 'error' ] ) ) {
+					_e( '<p>An error has occured with the ICIT Weather Widget, check your settings to make sure the city you are searching for exists.</p>', 'icit_weather' );
+					return;
 				}
 				
 				// check the widget has class name and id
@@ -218,7 +238,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 					printf( '<p class="icit-credit-link">'. __( 'Weather Widget by %s', 'icit_weather' ) .'</p>', $interconnect );
 				}
 				
-				echo $after_widget; 
+				echo $after_widget;
 			
 			}
 		}
@@ -336,7 +356,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			);
 			
 			if ( isset( $weather[ $id] ) ) {
-				$condition = $weather[ $id ];
+				$condition = sprintf( __( '%s', 'icit_weather' ), $weather[ $id ] );
 			} else {
 				foreach( array_reverse( $weather, true ) as $key => $name ) {
 					if ( intval( $id ) > intval( $key ) ) {

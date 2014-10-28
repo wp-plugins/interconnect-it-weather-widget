@@ -14,8 +14,8 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?q=$city,$country&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
 		
 		// Create JSON array
-		$content = file_get_contents( $url );
-		$json = json_decode( $content, true );
+		$content = wp_remote_get( $url );
+		$json = json_decode( wp_remote_retrieve_body( $content ), true );
 
 		// Change the user agent string (Fixes problem with results of some country/city locations not being returned)
 		add_filter('http_headers_useragent', 'icit_change_user_agent');
@@ -50,8 +50,8 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 			$url = sprintf( "http://api.openweathermap.org/data/2.5/forecast/daily?q=$city,$country&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
 			
 			// Create JSON array
-			$content = file_get_contents( $url );
-			$json = json_decode( $content, true );
+			$content = wp_remote_get( $url );
+			$json = json_decode( wp_remote_retrieve_body( $content ), true );
 
 			// Extract the forecast info from the feed and declare variables for attributes.
 			$output[ 'forecast' ] = array( );
