@@ -1,6 +1,6 @@
 
 
-.weather-wrapper { border: solid 2px #ADC0CF; 
+.weather-wrapper { border: solid 2px #ADC0CF; }
 .weather-wrapper .weather-icon { margin: 0 auto; }
 .weather-wrapper .weather-location { font-weight: bold; font-size: 13px; }
 .weather-wrapper .weather-location .weather-country { display: block; font-size: 12px; }
@@ -14,5 +14,3 @@
 .weather-wrapper .weather-day2 { display: inline-block; width: auto; }
 .weather-wrapper .weather-day3 { display: inline-block; width: auto; }
 .icit-credit-link { margin: 20px 0; font-size: 10px; }
-
-</style>

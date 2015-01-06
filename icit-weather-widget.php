@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.2.1
+ Version: 2.3
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -51,7 +51,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 	class icit_weather_widget extends WP_Widget {
 
-		// Define variables and default settigns
+		// Define variables and default settings
 		var $images = array();
 
 		var $defaults = array(
@@ -64,6 +64,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			'display' => 'compact',
 			'credit' => true,
 			'css' => true,
+			'position' => 'bottom',
 			'background_day' => '#FF7C80',
 			'background_night' => '#FF7C80',
 			'data' => array( ),
@@ -96,6 +97,8 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				$attributes[ 'breakdown' ] = false;
 			if ( $attributes[ 'mph' ] === "false" )
 				$attributes[ 'mph' ] = false;
+			if ( $attributes[ 'credit' ] === "false" )
+				$attributes[ 'credit' ] = false;
 			
 			
 			ob_start();
@@ -110,7 +113,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			global $iso3166;
 			
 			// Include icon fonts
-			wp_enqueue_style('miriam86', ICIT_WEATHER_URL. '/images/miriam86/style.css');		
+			wp_enqueue_style('icomoon', ICIT_WEATHER_URL. '/images/icomoon/style.css');		
 				
 			extract( $args, EXTR_SKIP );
 
@@ -157,7 +160,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 				// output the css if desired
 				if ( $css )
-					$this->css( $background_day, $background_night, $this->is_night( $data ) );
+					$this->css( $background_day, $background_night, $this->is_night( $data ), $position );
 					
 				// tidy up location name
 				$location = array();
@@ -182,28 +185,36 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				$location = implode(" ", $location);
 				
 				?>
-
+				
 				<div class="weather-wrapper">
-					<div class="top">
-						<div class="left">
-							<div class="weather-temperature"><?php  echo $celsius ? round($data[ 'current' ][ 'temperature' ] ) . '&deg;C' : round( ($data[ 'current' ][ 'temperature' ] ) * 1.8 + 32 ) . '&deg;F' ; ?></div>
+					<div class="main">
+						<div class="cond">
+							<div class="weather-temperature">
+								<?php  echo $celsius ? round($data[ 'current' ][ 'temperature' ] ) . '&deg;C' : round( ($data[ 'current' ][ 'temperature' ] ) * 1.8 + 32 ) . '&deg;F' ; ?>
+							</div>
 							<?php if ( $breakdown ) { ?>
-								<div class="weather-condition"><?php echo ucwords( $this->get_weather( $data[ 'current' ][ 'number' ] ) ) ; ?></div>
+								<div class="weather-condition">
+									<?php echo ucwords( $this->get_weather( $data[ 'current' ][ 'number' ] ) ) ; ?>
+								</div>
 							<?php } ?>
 						</div>
-						<?php if ( $breakdown ) { ?>
-						<div class="right">
-							<div class="weather-wind-condition"><?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round( $data[ 'current' ][ 'speed'] * 2.24 ), $this->get_direction( $data[ 'current' ][ 'direction' ] ), round( $data[ 'current' ][ 'speed' ] * 3.6 ) ); ?></div>
-							<div class="weather-humidity"><?php printf( __( 'Humidity: %s%%', 'icit_weather' ), $data[ 'current' ][ 'humidity' ] ) ; ?></div>
-						</div>
-						<?php } ?>
 						<div class="weather-icon">
-						<?php echo $this->get_icon( $data[ 'current' ][ 'number' ], $data ); ?>
+							<?php echo $this->get_icon( $data[ 'current' ][ 'number' ], $data ); ?>
+							<div class="weather-location">
+								<?php echo empty( $title ) ? sprintf( __( '%s', 'icit_weather' ), $location ) : sprintf( __( '%s', 'icit_weather' ), $title ); ?>
+							</div>
 						</div>
-						<div class="weather-location"><?php echo empty( $title ) ? sprintf( __( '%s', 'icit_weather' ), $location ) : sprintf( __( '%s', 'icit_weather' ), $title ); ?></div>
-
+						<?php if ( $breakdown ) { ?>
+						<div class="break">
+							<div class="weather-wind-condition">
+								<?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round( $data[ 'current' ][ 'speed'] * 2.24 ), $this->get_direction( $data[ 'current' ][ 'direction' ] ), round( $data[ 'current' ][ 'speed' ] * 3.6 ) ); ?>
+							</div>
+							<div class="weather-humidity">
+								<?php printf( __( 'Humidity: %s%%', 'icit_weather' ), $data[ 'current' ][ 'humidity' ] ) ; ?>
+							</div>
+						</div>
+						<?php } ?>	
 					</div>
-					
 				<?php
 					// Handle extended mode
 					if ( $display == 'extended' ) {
@@ -258,8 +269,8 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				700 => 'Mist',
 				741 => 'Fog',
 				800 => 'Sun',
-				801 => 'Scattered_Cloud_Day',
-				804 => 'Cloudy',
+				801 => 'CloudySun',
+				804 => 'Cloud',
 				903 => 'Snow',
 				904 => 'Sun',
 				906 => 'Hail'
@@ -284,7 +295,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 					$icon = 'Moon';
 				
 				if ( $id > 800 && $id < 804 )
-					$icon = 'Scattered_Cloud_Night';
+					$icon = 'CloudyNight';
 				
 			}
 			
@@ -374,23 +385,23 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			
 			$directions = array(
 				
-				0 => 'N',
-				11.25 => 'NNE',
-				33.75 => 'NE',
-				56.25 => 'ENE',
-				78.75 => 'E',
-				101.25 => 'ESE',
-				123.75 => 'SE',
-				146.25 => 'SSE',
-				168.75 => 'S',
-				191.25 => 'SSW',
-				213.75 => 'SW',
-				236.25 => 'WSW',
-				258.75 => 'W',
-				281.25 => 'WNW',
-				303.75 => 'NW',
-				326.25 => 'NNW',
-				348.75 => 'N'
+				0 		=> 'N',
+				11.25	=> 'NNE',
+				33.75 	=> 'NE',
+				56.25 	=> 'ENE',
+				78.75 	=> 'E',
+				101.25 	=> 'ESE',
+				123.75 	=> 'SE',
+				146.25 	=> 'SSE',
+				168.75 	=> 'S',
+				191.25 	=> 'SSW',
+				213.75 	=> 'SW',
+				236.25 	=> 'WSW',
+				258.75 	=> 'W',
+				281.25 	=> 'WNW',
+				303.75 	=> 'NW',
+				326.25 	=> 'NNW',
+				348.75 	=> 'N'
 				
 			);
 			
@@ -483,12 +494,21 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				<label for="<?php echo $this->get_field_id( 'city' ); ?>"><?php _e( 'City, town, or city ID:', 'icit_weather' )?></label>
 				<input class="widefat" id="<?php echo $this->get_field_id( 'city' ); ?>" name="<?php echo $this->get_field_name( 'city' ); ?>" type="text" value="<?php echo esc_attr( $city ); ?>" />
 			</p>
-
+			
 			<p>
 				<label for="<?php echo $this->get_field_id( 'display' ); ?>"><?php _e( 'Widget display:', 'icit_weather' )?></label>
 				<select id="<?php echo $this->get_field_id( 'display' ); ?>" name="<?php echo $this->get_field_name( 'display' ); ?>" class="widefat">
 					<option <?php selected( $display, 'compact' ); ?> value="compact"><?php _e('Compact', 'icit_weather'); ?></option>
 					<option <?php selected( $display, 'extended' ); ?> value="extended"><?php _e('Extended', 'icit_weather'); ?></option>
+				</select>
+			</p>
+			
+			<p>
+				<label for="<?php echo $this->get_field_id( 'position' ); ?>"><?php _e( 'Position of forecast:', 'icit_weather' )?></label>
+				<select id="<?php echo $this->get_field_id( 'position' ); ?>" name="<?php echo $this->get_field_name( 'position' ); ?>" class="widefat">
+					<option <?php selected( $position, 'right' ); ?> value="right"><?php _e('Right', 'icit_weather'); ?></option>
+					<option <?php selected( $position, 'bottom' ); ?> value="bottom"><?php _e('Bottom', 'icit_weather'); ?></option>
+					<option <?php selected( $position, 'left' ); ?> value="left"><?php _e('Left', 'icit_weather'); ?></option>
 				</select>
 			</p>
 			
@@ -565,6 +585,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			$instance[ 'frequency' ] = intval( $new_instance[ 'frequency' ] ) > 0 ? intval( $new_instance[ 'frequency' ] ) : $this->defaults[ 'frequency' ] ;
 			$instance[ 'days' ] = intval( $new_instance[ 'days' ] ) > 0 ? intval( $new_instance[ 'days' ] ) : $this->defaults[ 'days' ] ;
 			$instance[ 'display' ] = isset( $new_instance[ 'display' ] ) ? $new_instance[ 'display' ] : $this->defaults[ 'display' ] ;
+			$instance[ 'position' ] = ( $new_instance[ 'display' ] == 'extended' && isset( $new_instance[ 'position' ] ) ) ? $new_instance[ 'position' ] : $this->defaults[ 'position' ] ;
 			$instance[ 'background_day' ] = isset( $new_instance[ 'background_day' ] ) ? $new_instance[ 'background_day' ] : $this->defaults[ 'background_day' ] ;
 			$instance[ 'background_night' ] = isset( $new_instance[ 'background_night' ] ) ? $new_instance[ 'background_night' ] : $this->defaults[ 'background_night' ] ;
 			$instance[ 'celsius' ] = isset( $new_instance[ 'celsius' ] ) && ( bool ) $new_instance[ 'celsius' ] ? true : false;
@@ -592,87 +613,87 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		}
 
 
-		function css( $background_day, $background_night, $night ) { ?>
+		function css( $background_day, $background_night, $night, $position ) { ?>
 <!-- ICIT Weather Widget CSS -->
 <style type="text/css" media="screen">
 #<?php echo $this->id ?> .weather-wrapper {
 			  position: relative;
 			  margin: 20px 0;
+			  width: <?= $position == "bottom" ? "100%" : "80%"; ?>;
+			  <?= $position == "left" ? "left: 20%" : ""; ?>;
 			}
 			
-#<?php echo $this->id ?> .weather-wrapper .top	{
-			  background: <?php echo $night ? $background_night : $background_day; ?>;
+#<?php echo $this->id ?> .weather-wrapper .main	{
+			  background: <?= $night ? $background_night : $background_day; ?>;
+			  height: <?= $position == "bottom" ? "auto" : "100%"; ?>;
 			}
 
-#<?php echo $this->id ?> .weather-wrapper .left {
-			position: absolute;
-			left: 0;
-			top: 0;
-			min-width: 50%;
+#<?php echo $this->id ?> .weather-wrapper .main .cond {
+			max-width: <?= $position == "bottom" ? "50%" : "100%"; ?>;
+			float: <?= $position == "left" ? "right" : "left"; ?>;
+			<?= $position == "left" ? "padding-right: 3px;" : "padding-left: 3px;"; ?>
 			}
 			
-#<?php echo $this->id ?> .weather-wrapper .right {
-			position: absolute;
-			right: 0;
-			top: 0;
-			min-width: 50%;
+#<?php echo $this->id ?> .weather-wrapper .main .break {
+			max-width: <?= $position == "bottom" ? "50%" : "100%"; ?>;
+			padding-bottom: 5px;
+			<?= $position == "bottom" ? "position: absolute; top: 0; right: 1%;" : ""; ?>
+			<?= $position == "right" ? "padding-left: 3px;" : "padding-right: 3px;"; ?>
 			}
 	
 #<?php echo $this->id ?> .weather-wrapper .weather-temperature	{
 			color: white;
 			font-family: Trebuchet MS, Candara, sans-serif;
-			font-size: 1.25em;
+			font-size: 16px;
 			font-weight: bold;
-			text-align: left;
-			padding-left: 3%;
 			padding-top: 5px;
+			text-align: <?= $position == "left" ? "right" : "left"; ?>;
+			<?= $position == "left" ? "padding-right:" : "padding-left:"; ?> 4%;
 			}
 			
 #<?php echo $this->id ?> .weather-wrapper .weather-condition	{
 			color: white;
 			font-family: Trebuchet MS, Candara, sans-serif;
-			font-size: 1.1em;
-			text-align: left;
-			padding-left: 3%;
+			font-size: 14px;
 			padding-top: 3px;
+			text-align: <?= $position == "left" ? "right" : "left"; ?>;
+			<?= $position == "left" ? "padding-right:" : "padding-left:"; ?> 4%;
 			}
 
 #<?php echo $this->id ?> .weather-wrapper .weather-wind-condition	{
 			color: white;
 			font-family: Trebuchet MS, Candara, sans-serif;
-			font-size: 1.1em;
-			text-align: right;
-			padding-right: 3%;
+			font-size: 14px;
 			padding-top: 5px;
+			text-align: <?= $position == "right" ? "left" : "right"; ?>;
+			<?= $position == "right" ? "padding-left:" : "padding-right:"; ?> 2%;
 			}
 
 #<?php echo $this->id ?> .weather-wrapper .weather-humidity	{
 			color: white;
 			font-family: Trebuchet MS, Candara, sans-serif;
-			font-size: 1.1em;
-			text-align: right;
-			padding-right: 3%;
-			padding-top: 5px;
+			font-size: 14px;
+			padding-top: 3px;
+			text-align: <?= $position == "right" ? "left" : "right"; ?>;
+			<?= $position == "right" ? "padding-left:" : "padding-right:"; ?> 2%;
 			}
 			
 #<?php echo $this->id ?> .weather-wrapper .weather-icon		{
 			 text-align: center;
 			 font-size: 7em;
-			 padding-top: 50px;
-			 padding-bottom: 10px;
+			 clear: both;
 			 color: white;
+			 padding: <?= $position == "bottom" ? "0" : "4% 0"; ?>;
 			}
 			
 #<?php echo $this->id ?> .weather-wrapper .weather-location	{
-			color: white;
 			font-family: Trebuchet MS, Candara, sans-serif;
-			font-size: 1.25em;
-			padding-bottom: 15px;
+			font-size: 16px;
+			padding-bottom: 4%;
 			font-weight: bold;
-			text-align: center;
 			}
 			  
-#<?php echo $this->id ?> .weather-forecast li::before	{
+#<?php echo $this->id ?> .weather-wrapper .weather-forecast li::before	{
 			display: none;
 			}
 			
@@ -680,42 +701,47 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			 background: white;
 			 }
 			
-#<?php echo $this->id ?> .weather-forecast .weather-day  	{
-			  color: <?php echo $night ? $background_night : $background_day; ?>;
-			  padding-bottom: 10%;
-			  padding-top: 10%;
+#<?php echo $this->id ?> .weather-wrapper .weather-forecast .weather-day  	{
+			  color: <?= $night ? $background_night : $background_day; ?>;
+			  padding: 10% 0;
 			  }
 			
-#<?php echo $this->id ?> .weather-forecast .weather-icon-thumb  {
-			 color: <?php echo $night ? $background_night : $background_day; ?>;
-			 font-size: 2.5em;
-			 padding-top: 4%;
+#<?php echo $this->id ?> .weather-wrapper .weather-forecast .weather-icon-thumb  {
+			 color: <?= $night ? $background_night : $background_day; ?>;
+			 font-size: 2.2em;
+			 padding: 1.5% 0;
 			}
 			
-#<?php echo $this->id ?> .weather-forecast li	{
+#<?php echo $this->id ?> .weather-wrapper .weather-forecast li	{
 			background: none;
-			float: left;
+			<?= $position == "bottom" ? "float: left" : "float: none"; ?>;
 			display: block;
 			text-align: center;
-			padding: 5px 0 5px 0;
-			margin-bottom: 20px;
-			color: <?php echo $night ? $background_night : $background_day; ?>;
-			width: 33.3333%;
+			margin: 0;
+			padding-top: <?= $position == "bottom" ? "3px" : "5px"; ?>;
+			padding-left: <?= $position == "bottom" ? "0" : "10px"; ?>;
+			padding-right: <?= $position == "bottom" ? "0" : "10px"; ?>;
+			padding-bottom: <?= $position == "bottom" ? "3px" : ""; ?>;
+			color: <?= $night ? $background_night : $background_day; ?>;
 			border: none;
+			width: <?= $position == "bottom" ? "33.3333%" : ""; ?>;
 			}
 			
-#<?php echo $this->id ?> .weather-forecast	{
+#<?php echo $this->id ?> .weather-wrapper .weather-forecast	{
 			 overflow: hidden;
 			}
 			
 #<?php echo $this->id ?> .weather-wrapper .weather-forecast	{
 			  border: solid 2px;
-			  border-color: <?php echo $night ? $background_night : $background_day; ?>;
+			  border-color: <?= $night ? $background_night : $background_day; ?>;
 			  margin: 0;
+			  <?= $position == "bottom" ? "" : "position: absolute; top: 0; bottom: 0"; ?>;
+			  <?= $position == "right" ? "left: 100%" : ""; ?>;
+			  <?= $position == "left" ? "right: 100%" : ""; ?>;
 			  }
 
-#<?php echo $this->id ?> .icit-credit-link a	{
-			 color: <?php echo $night ? $background_night : $background_day;; ?>;
+#<?php echo $this->id ?> .icit-credit-link a {
+			 color: <?= $night ? $background_night : $background_day; ?>;
 			}
 			
 			

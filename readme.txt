@@ -1,10 +1,10 @@
 === ICIT Weather Widget ===
 
-Contributors: interconnectit, sanchothefat, AndyWalmsley, spectacula, mim_mc
+Contributors: interconnectit, sanchothefat, AndyWalmsley, Mim McNeela, spectacula, cm2creative
 Tags: weather, widget
 Requires at least: 3.8.1
-Tested up to: 4.0
-Stable tag: 2.2.1
+Tested up to: 4.1
+Stable tag: 2.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,6 +19,7 @@ The widget can be configured as follows:
 * Country - choose the country to get weather data from. (Some countries do not have an average result for weather conditions)
 * City - Enter the name of your area to recieve the weather results.
 * Display Mode - you can choose to show either a compact view of the current weather or show the forecast for the current day and next three days.
+* Position - This will change the position of the forecast list, right, left, or bottom. If display is compact position will stay as bottom for positioning of the weather breakdown.
 * Background colour during day - use the colour picker to choose what colour background you want during the day time.
 * Background colour during night - use the colour picker to choose what colour background you want during the night time.
 * Show Temperature in Celsius - sets the temperature display to degrees celsius rather than farenheit.
@@ -56,8 +57,10 @@ The shortcode can take the following parameters (value in brackets is the defaul
 * breakdown - true/false whether you want breakdown of wind and humidity ("true")
 * mph - true/false show wind speed in mph or km/h ("true")
 * display - 'compact' show just current weather / 'extended' show the next 3 day forecast ("compact")
+* position - 'bottom', 'right', 'left' the position of the forecast
 * background_day - Colour of background during day ("#FF7C80")
 * background_night - Colour of background during night ("#FF7C80")
+* credit - true/false show the interconnect/it credit link
 
 For example:
 [icit_weather city="Liverpool" country="UK" celsius="true" breakdown="false" display="compact" background_day="red" background_night="rgb(129,160,255)"]
@@ -77,16 +80,18 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.3   - Update icons and added styling option to move forecast list
 * 2.2.1 - Added shortcode
-* 2.2 - Changed api from using xml to json
+* 2.2   - Changed api from using xml to json
 * 2.1.1 - City name is now returned from OpenWeatherMap
-* 2.1 - icit-weather-widget is now translatable.
-* 2.0 - Now uses OpenWeatherMap, new icons and customisable css.
+* 2.1   - icit-weather-widget is now translatable.
+* 2.0   - Now uses OpenWeatherMap, new icons and customisable css.
 
 == Upgrade Notice ==
 
-* 2.2.1 Shortcode has been added
-* 2.2 - You (hopefully) won't notice any difference except for a better error message
+* 2.3   - Styling options
+* 2.2.1 - Shortcode has been added
+* 2.2   - You (hopefully) won't notice any difference except for a better error message
 * 2.1.1 - Bugfix!
-* 2.1 - Translatable!
-* 2.0 - It Works!
+* 2.1   - Translatable!
+* 2.0   - It Works!
