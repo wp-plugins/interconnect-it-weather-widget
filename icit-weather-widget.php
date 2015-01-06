@@ -295,7 +295,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 					$icon = 'Moon';
 				
 				if ( $id > 800 && $id < 804 )
-					$icon = 'CloudyNight';
+					$icon = 'CloudyMoon';
 				
 			}
 			
