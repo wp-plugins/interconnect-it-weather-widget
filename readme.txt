@@ -4,7 +4,7 @@ Contributors: interconnectit, sanchothefat, AndyWalmsley, Mim McNeela, spectacul
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.1
-Stable tag: 2.3
+Stable tag: 2.3.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.3.1 - Fixed CloudyMoon icon
 * 2.3   - Update icons and added styling option to move forecast list
 * 2.2.1 - Added shortcode
 * 2.2   - Changed api from using xml to json
@@ -89,6 +90,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Upgrade Notice ==
 
+* 2.3.1 - Fixed CloudyMoon icon
 * 2.3   - Styling options
 * 2.2.1 - Shortcode has been added
 * 2.2   - You (hopefully) won't notice any difference except for a better error message
