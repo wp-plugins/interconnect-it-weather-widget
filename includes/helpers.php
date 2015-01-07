@@ -11,7 +11,11 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		global $iso3166;
 
 		// Get current weather info
-		$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?q=$city,$country&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+		if ( preg_match( '/^\d{7}$/', $city ) ) {
+			$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?id=$city&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+		} else {
+			$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?q=$city,$country&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+		}
 		
 		// Create JSON array
 		$content = wp_remote_get( $url );
@@ -47,7 +51,11 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		if ( $extended ) {
 
 			// Get next three day forecast
-			$url = sprintf( "http://api.openweathermap.org/data/2.5/forecast/daily?q=$city,$country&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+			if ( preg_match( '/^\d{7}$/', $city ) ) {
+				$url = sprintf( "http://api.openweathermap.org/data/2.5/forecast/daily?id=$city&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+			} else {
+				$url = sprintf( "http://api.openweathermap.org/data/2.5/forecast/daily?q=$city,$country&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+			}
 			
 			// Create JSON array
 			$content = wp_remote_get( $url );
