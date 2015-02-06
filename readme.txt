@@ -4,7 +4,7 @@ Contributors: interconnectit, sanchothefat, AndyWalmsley, Mim McNeela, spectacul
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.1
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.3.3 - A few markup and styling updates
 * 2.3.2 - Fixed icons sometimes not displaying, fixed using city id to get weather
 * 2.3.1 - Fixed CloudyMoon icon
 * 2.3   - Update icons and added styling option to move forecast list
@@ -91,6 +92,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Upgrade Notice ==
 
+* 2.3.3 - Styling updates! And the temperature now shouldn't show as '-0'!
 * 2.3.2 - Bugfixes!
 * 2.3.1 - Fixed CloudyMoon icon
 * 2.3   - Styling options

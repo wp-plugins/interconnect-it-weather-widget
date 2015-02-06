@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.3.2
+ Version: 2.3.3
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -52,8 +52,6 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 	class icit_weather_widget extends WP_Widget {
 
 		// Define variables and default settings
-		var $images = array();
-
 		var $defaults = array(
 			'title' => '',
 			'city' => 'Liverpool',
@@ -82,8 +80,6 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		function __construct( ) {
 			$widget_ops = array( 'classname' => __CLASS__, 'description' => __( 'Show the weather from a location you specify.', 'icit_weather' ) );
 			$this->WP_Widget( __CLASS__, __( 'ICIT Weather', 'icit_weather'), $widget_ops);
-
-			$this->images = apply_filters('icit_weather_widget_images', $this->images );
 			
 			add_shortcode( 'icit_weather', array( $this, 'icit_weather_shortcode' ) );
 		}
@@ -112,9 +108,9 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		function widget( $args, $instance  ) {
 			global $iso3166;
 			
-			// Include icon fonts
+			// Include icon font
 			wp_enqueue_style('icomoon', ICIT_WEATHER_URL. '/images/icomoon/style.css');		
-				
+			
 			extract( $args, EXTR_SKIP );
 
 			$instance = wp_parse_args( $instance, $this->defaults );
@@ -173,12 +169,12 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				
 				// Display country name from iso or what is returned by OpenWeatherMap
 				if ( !empty( $weather_country ) && array_key_exists( $weather_country, $iso3166 ) ) {
-					$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $weather_country ] ) ), 'icit_weather' ) . '</span>';
+					$location[] = '<br><span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $weather_country ] ) ), 'icit_weather' ) . '</span>';
 				} else {
 					if ( strlen( $weather_country ) == 2 && array_key_exists( $country, $iso3166 ) ) {
-						$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $country ] ) ), 'icit_weather' ) . '</span>';
+						$location[] = '<br><span class="weather-country">' . __( ucwords( strtolower( $iso3166[ $country ] ) ), 'icit_weather' ) . '</span>';
 					} else {
-						$location[] = '<span class="weather-country">' . __( ucwords( strtolower( $weather_country ) ), 'icit_weather' ) . '</span>';
+						$location[] = '<br><span class="weather-country">' . __( ucwords( strtolower( $weather_country ) ), 'icit_weather' ) . '</span>';
 					}
 				}
 				
@@ -188,32 +184,70 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				
 				<div class="weather-wrapper">
 					<div class="main">
-						<div class="cond">
-							<div class="weather-temperature">
-								<?php  echo $celsius ? round($data[ 'current' ][ 'temperature' ] ) . '&deg;C' : round( ($data[ 'current' ][ 'temperature' ] ) * 1.8 + 32 ) . '&deg;F' ; ?>
+						
+						<?php
+						// If the forecast is displayed at the bottom then set the markup for cond and break to be above icon else set cond then icon then break
+						// If user chooses to display breakdown display the markup
+						if ( $position == "bottom" ) { ?>
+						
+							<div class="cond">
+								<div class="weather-temperature">
+									<?php  echo $celsius ? round( ( $data[ 'current' ][ 'temperature' ] ) + 0 ) . '&deg;C' : round( ( ($data[ 'current' ][ 'temperature' ] ) * 1.8 + 32 ) + 0 ) . '&deg;F' ; ?>
+								</div>
+								<?php if ( $breakdown ) { ?>
+									<div class="weather-condition">
+										<?php echo ucwords( $this->get_weather( $data[ 'current' ][ 'number' ] ) ) ; ?>
+									</div>
+								<?php } ?>
 							</div>
 							<?php if ( $breakdown ) { ?>
-								<div class="weather-condition">
-									<?php echo ucwords( $this->get_weather( $data[ 'current' ][ 'number' ] ) ) ; ?>
+								<div class="break">
+									<div class="weather-wind-condition">
+										<?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round( $data[ 'current' ][ 'speed'] * 2.24 ), $this->get_direction( $data[ 'current' ][ 'direction' ] ), round( $data[ 'current' ][ 'speed' ] * 3.6 ) ); ?>
+									</div>
+									<div class="weather-humidity">
+										<?php printf( __( 'Humidity: %s%%', 'icit_weather' ), $data[ 'current' ][ 'humidity' ] ) ; ?>
+									</div>
 								</div>
 							<?php } ?>
-						</div>
-						<div class="weather-icon">
-							<?php echo $this->get_icon( $data[ 'current' ][ 'number' ], $data ); ?>
-							<div class="weather-location">
-								<?php echo empty( $title ) ? sprintf( __( '%s', 'icit_weather' ), $location ) : sprintf( __( '%s', 'icit_weather' ), $title ); ?>
+							<div class="weather-icon">
+								<?php echo $this->get_icon( $data[ 'current' ][ 'number' ], $data ); ?>
+								<div class="weather-location">
+									<?php echo empty( $title ) ? sprintf( __( '%s', 'icit_weather' ), $location ) : sprintf( __( '%s', 'icit_weather' ), $title ); ?>
+								</div>
 							</div>
-						</div>
-						<?php if ( $breakdown ) { ?>
-						<div class="break">
-							<div class="weather-wind-condition">
-								<?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round( $data[ 'current' ][ 'speed'] * 2.24 ), $this->get_direction( $data[ 'current' ][ 'direction' ] ), round( $data[ 'current' ][ 'speed' ] * 3.6 ) ); ?>
+							
+						<?php } else { ?>
+						
+							<div class="cond">
+								<div class="weather-temperature">
+									<?php  echo $celsius ? round( ( $data[ 'current' ][ 'temperature' ] ) + 0 ) . '&deg;C' : round( ( ($data[ 'current' ][ 'temperature' ] ) * 1.8 + 32 ) + 0 ) . '&deg;F' ; ?>
+								</div>
+								<?php if ( $breakdown ) { ?>
+									<div class="weather-condition">
+										<?php echo ucwords( $this->get_weather( $data[ 'current' ][ 'number' ] ) ) ; ?>
+									</div>
+								<?php } ?>
 							</div>
-							<div class="weather-humidity">
-								<?php printf( __( 'Humidity: %s%%', 'icit_weather' ), $data[ 'current' ][ 'humidity' ] ) ; ?>
+							<div class="weather-icon">
+								<?php echo $this->get_icon( $data[ 'current' ][ 'number' ], $data ); ?>
+								<div class="weather-location">
+									<?php echo empty( $title ) ? sprintf( __( '%s', 'icit_weather' ), $location ) : sprintf( __( '%s', 'icit_weather' ), $title ); ?>
+								</div>
 							</div>
-						</div>
-						<?php } ?>	
+							<?php if ( $breakdown ) { ?>
+							<div class="break">
+								<div class="weather-wind-condition">
+									<?php printf( $mph ?  __( 'Wind: %1$smph %2$s', 'icit_weather' ) : __( 'Wind: %3$skm/h %2$s', 'icit_weather' ), round( $data[ 'current' ][ 'speed'] * 2.24 ), $this->get_direction( $data[ 'current' ][ 'direction' ] ), round( $data[ 'current' ][ 'speed' ] * 3.6 ) ); ?>
+								</div>
+								<div class="weather-humidity">
+									<?php printf( __( 'Humidity: %s%%', 'icit_weather' ), $data[ 'current' ][ 'humidity' ] ) ; ?>
+								</div>
+							</div>
+							<?php } ?>
+							
+						<?php } ?>
+						
 					</div>
 				<?php
 					// Handle extended mode
@@ -229,7 +263,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 							</div>
 							
 							<div class="temp">
-								<?php echo $celsius ? round( $forecast[ 'temperature' ] ) . '&deg;C' : round( ( $forecast[ 'temperature' ] ) * 1.8 + 32 ) . '&deg;F' ; ?> 
+								<?php echo $celsius ? round( ( $forecast[ 'temperature' ] ) + 0 ) . '&deg;C' : round( ( ( $forecast[ 'temperature' ] ) * 1.8 + 32 ) + 0 ) . '&deg;F' ; ?>
 							</div>
 							
 							<div class="weather-icon-thumb">
@@ -415,37 +449,6 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			return $direction;
 		
 		}
-
-		/*
-		 * @param $image = the image path returned by the OpenWeather API
-		 * @param $thumb = false, if set to true the function will return the thumbnail url
-		 * @return array( 'src' => filename, 'key' => $this->images array key )
-		 */
-		function check_image( $image, $thumb = false ) {
-			
-			// Break the file name into 2 parts name and ext. The array will have basename, name and ext
-			preg_match( '/(.*)\.([a-zA-Z0-9]{3,4}$)/is', basename( $image ), $icon );
-
-			if ( ! in_array( $icon[ 1 ], array_keys( $this->images ) ) ) {
-				if ( file_exists( ICIT_WEATHER_PTH . '/images/' . $icon[ 0 ] ) )
-					$icon[ 'filename' ] = $icon[ 0 ];
-				elseif ( file_exists( ICIT_WEATHER_PTH . '/images/' . $icon[ 1 ] . '.png' ) )
-					$icon[ 'filename' ] = $icon[ 1 ] . '.png';
-				else
-					$icon[ 'filename' ] = 'na.png';
-			} else
-				$icon[ 'filename' ] = $this->images[ $icon[ 1 ] ];
-
-
-			if ( $thumb && file_exists( ICIT_WEATHER_PTH . '/images/' . str_replace(".png", "-thumb.png", $icon[ 'filename' ]) ) )
-				$icon[ 'filename' ] = str_replace(".png", "-thumb.png", $icon[ 'filename' ]);
-
-			return apply_filters('icit_weather_widget_check_image', array(
-						'src' => ICIT_WEATHER_URL . '/images/' . $icon[ 'filename' ],
-						'key' => $icon[ 1 ]
-					), $image, $icon, $thumb);
-		
-		}
 		
 		function add_error( $error  = '') {
 			
@@ -583,7 +586,6 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			$instance[ 'country' ] = in_array( $new_instance[ 'country' ], array_keys( ( array ) $iso3166 ) ) ? $new_instance[ 'country' ] : $this->defaults[ 'country' ];
 			$instance[ 'city' ] = sanitize_text_field( isset( $new_instance[ 'city' ] ) ? $new_instance[ 'city' ] : $this->defaults[ 'city' ] );
 			$instance[ 'frequency' ] = intval( $new_instance[ 'frequency' ] ) > 0 ? intval( $new_instance[ 'frequency' ] ) : $this->defaults[ 'frequency' ] ;
-			$instance[ 'days' ] = intval( $new_instance[ 'days' ] ) > 0 ? intval( $new_instance[ 'days' ] ) : $this->defaults[ 'days' ] ;
 			$instance[ 'display' ] = isset( $new_instance[ 'display' ] ) ? $new_instance[ 'display' ] : $this->defaults[ 'display' ] ;
 			$instance[ 'position' ] = ( $new_instance[ 'display' ] == 'extended' && isset( $new_instance[ 'position' ] ) ) ? $new_instance[ 'position' ] : $this->defaults[ 'position' ] ;
 			$instance[ 'background_day' ] = isset( $new_instance[ 'background_day' ] ) ? $new_instance[ 'background_day' ] : $this->defaults[ 'background_day' ] ;
@@ -614,6 +616,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 
 		function css( $background_day, $background_night, $night, $position ) { ?>
+		
 <!-- ICIT Weather Widget CSS -->
 <style type="text/css" media="screen">
 #<?php echo $this->id ?> .weather-wrapper {
@@ -629,13 +632,13 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			}
 
 #<?php echo $this->id ?> .weather-wrapper .main .cond {
-			max-width: <?= $position == "bottom" ? "50%" : "100%"; ?>;
+			width: <?= $position == "bottom" ? "50%" : "100%"; ?>;
 			float: <?= $position == "left" ? "right" : "left"; ?>;
 			<?= $position == "left" ? "padding-right: 3px;" : "padding-left: 3px;"; ?>
 			}
 			
 #<?php echo $this->id ?> .weather-wrapper .main .break {
-			max-width: <?= $position == "bottom" ? "50%" : "100%"; ?>;
+			width: <?= $position == "bottom" ? "50%" : "100%"; ?>;
 			padding-bottom: 5px;
 			<?= $position == "bottom" ? "position: absolute; top: 0; right: 1%;" : ""; ?>
 			<?= $position == "right" ? "padding-left: 3px;" : "padding-right: 3px;"; ?>
@@ -689,7 +692,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 #<?php echo $this->id ?> .weather-wrapper .weather-location	{
 			font-family: Trebuchet MS, Candara, sans-serif;
 			font-size: 16px;
-			padding-bottom: 4%;
+			padding-bottom: <?= $position == "bottom" ? "4%" : "0"; ?>;
 			font-weight: bold;
 			}
 			  
@@ -703,7 +706,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			
 #<?php echo $this->id ?> .weather-wrapper .weather-forecast .weather-day  	{
 			  color: <?= $night ? $background_night : $background_day; ?>;
-			  padding: 10% 0;
+			  padding: <?= $position == "bottom" ? "10% 0" : "0"; ?>;
 			  }
 			
 #<?php echo $this->id ?> .weather-wrapper .weather-forecast .weather-icon-thumb  {
@@ -718,13 +721,10 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			display: block;
 			text-align: center;
 			margin: 0;
-			padding-top: <?= $position == "bottom" ? "3px" : "5px"; ?>;
-			padding-left: <?= $position == "bottom" ? "0" : "10px"; ?>;
-			padding-right: <?= $position == "bottom" ? "0" : "10px"; ?>;
-			padding-bottom: <?= $position == "bottom" ? "3px" : ""; ?>;
+			padding: <?= $position == "bottom" ? "3px 0" : "5px 10px" ?>;
 			color: <?= $night ? $background_night : $background_day; ?>;
 			border: none;
-			width: <?= $position == "bottom" ? "33.3333%" : ""; ?>;
+			width: <?= $position == "bottom" ? "33.3333%" : "auto"; ?>;
 			}
 			
 #<?php echo $this->id ?> .weather-wrapper .weather-forecast	{
