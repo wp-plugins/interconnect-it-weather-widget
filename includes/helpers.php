@@ -7,12 +7,12 @@ function icit_change_user_agent(){
 
 
 if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
-	function icit_fetch_open_weather( $city = 'liverpool', $country = 'uk', $extended = true ) {
+	function icit_fetch_open_weather( $city = 'liverpool', $country = 'uk', $extended = false ) {
 		global $iso3166;
-
+			
 		// Get current weather info
 		if ( preg_match( '/^\d{7}$/', $city ) ) {
-			$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?id=$city&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+			$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?id=$city&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )) );
 		} else {
 			$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?q=$city,$country&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
 		}
@@ -28,10 +28,10 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		$output = array( );
 
 		// Break if OpenWeatherMap returns an error
-		if ( isset( $json[ 'message' ] ) ) {
-			
-			$output [ 'error' ] = $json[ 'message' ];
-			return $output;
+		if ( isset( $json[ 'cod' ] ) && substr( $json[ 'cod' ], 0, 2 ) != '20' ) {
+		
+				$output [ 'error' ] = $json[ 'message' ];
+				return $output;
 		
 		} else {
 			
@@ -61,19 +61,28 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 			$content = wp_remote_get( $url );
 			$json = json_decode( wp_remote_retrieve_body( $content ), true );
 
-			// Extract the forecast info from the feed and declare variables for attributes.
-			$output[ 'forecast' ] = array( );
-			foreach ( $json[ 'list' ] as $i => $forecast ) {
-				if ( $i == 0 )
-					continue;
-				
-				$forecast_output = array();
-				
-				$forecast_output[ 'time' ] = ( string ) $forecast[ 'dt' ];
-				$forecast_output[ 'number' ] = ( string ) $forecast[ 'weather' ][ 0 ][ 'id' ];
-				$forecast_output[ 'temperature' ] = ( string ) $forecast[ 'temp' ][ 'day' ];
-				
-				$output[ 'forecast' ][ ] = $forecast_output;
+			if ( isset( $json[ 'cod' ] ) && substr( $json[ 'cod' ], 0, 2 ) != '20' ) {
+			
+				$output [ 'error' ] = $json[ 'message' ];
+				return $output;
+			
+			} else {
+			
+				// Extract the forecast info from the feed and declare variables for attributes.
+				$output[ 'forecast' ] = array( );
+				foreach ( $json[ 'list' ] as $i => $forecast ) {
+					if ( $i == 0 )
+						continue;
+					
+					$forecast_output = array();
+					
+					$forecast_output[ 'time' ] = ( string ) $forecast[ 'dt' ];
+					$forecast_output[ 'number' ] = ( string ) $forecast[ 'weather' ][ 0 ][ 'id' ];
+					$forecast_output[ 'temperature' ] = ( string ) $forecast[ 'temp' ][ 'day' ];
+					
+					$output[ 'forecast' ][ ] = $forecast_output;
+					
+				}
 				
 			}
 			

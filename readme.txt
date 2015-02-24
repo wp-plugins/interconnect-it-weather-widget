@@ -3,7 +3,7 @@
 Contributors: interconnectit, sanchothefat, AndyWalmsley, Mim McNeela, spectacula, cm2creative
 Tags: weather, widget
 Requires at least: 3.8.1
-Tested up to: 4.1
+Tested up to: 4.1.1
 Stable tag: 2.3.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -20,8 +20,13 @@ The widget can be configured as follows:
 * City - Enter the name of your area to recieve the weather results.
 * Display Mode - you can choose to show either a compact view of the current weather or show the forecast for the current day and next three days.
 * Position - This will change the position of the forecast list, right, left, or bottom. If display is compact position will stay as bottom for positioning of the weather breakdown.
-* Background colour during day - use the colour picker to choose what colour background you want during the day time.
-* Background colour during night - use the colour picker to choose what colour background you want during the night time.
+* Colour Style - Choose between two styles of colouring:
+    * Style 1 - Primary colour: Background colour of current weather and font colour of forecast, Secondary colour: Font colour of current weather and background colour of forecast.
+    * Style 2 - Primary colour: Font colour for both sections, Secondary colour: background colour of both sections.
+* Primary colour during day - use the colour picker to choose what primary colour you want during the day time.
+* Primary colour during night - use the colour picker to choose what priamry colour you want during the night time.
+* Secondary colour during day - use the colour picker to choose what secondary colour you want during the day time.
+* Secondary colour during night - use the colour picker to choose what secondary colour you want during the night time.
 * Show Temperature in Celsius - sets the temperature display to degrees celsius rather than farenheit.
 * Show weather breakdown - choose whether to display the wind, humidity and written weather condition, as well as the temperature and weather icon.
 * Show Wind Speed in mph - sets the wind speed display to mph rather than km/h.
@@ -56,14 +61,16 @@ The shortcode can take the following parameters (value in brackets is the defaul
 * celsius - true/false whether to show temperature in celcius ("true")
 * breakdown - true/false whether you want breakdown of wind and humidity ("true")
 * mph - true/false show wind speed in mph or km/h ("true")
-* display - 'compact' show just current weather / 'extended' show the next 3 day forecast ("compact")
-* position - 'bottom', 'right', 'left' the position of the forecast
-* background_day - Colour of background during day ("#FF7C80")
-* background_night - Colour of background during night ("#FF7C80")
+* display - 'none' show just current weather / 'bottom' show the forecast at the bottom / 'right' forecast to the right / 'left' forecast to the left ("none")
+* style - '1', '2' style of colour ("1")
+* primary_day - Primary colour during day ("#FF7C80")
+* primary_night - Primary colour during night ("#FF7C80")
+* secondary_day - Secondary colour during day ("#FFFFFF")
+* secondary_night - Secondary colour during night ("#FFFFFF")
 * credit - true/false show the interconnect/it credit link
 
 For example:
-[icit_weather city="Liverpool" country="UK" celsius="true" breakdown="false" display="compact" background_day="red" background_night="rgb(129,160,255)"]
+[icit_weather city="Liverpool" country="UK" celsius="true" breakdown="false" display="none" background_day="red" background_night="rgb(129,160,255)"]
 
 == Known problems ==
 
@@ -74,12 +81,17 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Screenshots ==
 
-1. Compact Mode
-2. Extended Mode
+1. No Forecast Mode
+2. Display Forecast Bottom Mode
 3. Widget Settings
 
 == Changelog ==
 
+* 2.4   - A lot of styling updates and a bit of cleanup of the markup and settings
+    * Added colour styles: Check the description/readme for information on which style does what
+    * Merged the Display and Position settings, you can now choose whether there is a forecast and where it displays in 1 setting
+    * Fixed a lot of the issues with the display when not displaying breakdown information
+    * Carrying on with a few of the changes from V2.3.3 where the markup is a bit more dynamic based on settings
 * 2.3.3 - A few markup and styling updates
 * 2.3.2 - Fixed icons sometimes not displaying, fixed using city id to get weather
 * 2.3.1 - Fixed CloudyMoon icon
@@ -92,6 +104,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Upgrade Notice ==
 
+* 2.4   - More colour customisations!
 * 2.3.3 - Styling updates! And the temperature now shouldn't show as '-0'!
 * 2.3.2 - Bugfixes!
 * 2.3.1 - Fixed CloudyMoon icon
