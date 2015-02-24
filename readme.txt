@@ -19,7 +19,6 @@ The widget can be configured as follows:
 * Country - choose the country to get weather data from. (Some countries do not have an average result for weather conditions)
 * City - Enter the name of your area to recieve the weather results.
 * Display Mode - you can choose to show either a compact view of the current weather or show the forecast for the current day and next three days.
-* Position - This will change the position of the forecast list, right, left, or bottom. If display is compact position will stay as bottom for positioning of the weather breakdown.
 * Colour Style - Choose between two styles of colouring:
     * Style 1 - Primary colour: Background colour of current weather and font colour of forecast, Secondary colour: Font colour of current weather and background colour of forecast.
     * Style 2 - Primary colour: Font colour for both sections, Secondary colour: background colour of both sections.
