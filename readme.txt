@@ -1,10 +1,10 @@
 === ICIT Weather Widget ===
 
-Contributors: interconnectit, sanchothefat, AndyWalmsley, Mim McNeela, spectacula, cm2creative
+Contributors: interconnectit, AndyWalmsley, Mim McNeela, spectacula, sanchothefat, cm2creative
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.1.1
-Stable tag: 2.3.3
+Stable tag: 2.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
