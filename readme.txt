@@ -4,7 +4,7 @@ Contributors: interconnectit, AndyWalmsley, Mim McNeela, spectacula, sanchothefa
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.1.1
-Stable tag: 2.4
+Stable tag: 2.4.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.4.1 - Fixed an issue with the content being wider than the wrapper in some themes
 * 2.4   - A lot of styling updates and a bit of cleanup of the markup and settings
     * Added colour styles: Check the description/readme for information on which style does what
     * Merged the Display and Position settings, you can now choose whether there is a forecast and where it displays in 1 setting
