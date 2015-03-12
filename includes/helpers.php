@@ -1,37 +1,28 @@
 <?php
 
-function icit_change_user_agent(){
-	$agent = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.237 Safari/534.10";
-	return $agent;
-}
-
-
 if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 	function icit_fetch_open_weather( $city = 'liverpool', $country = 'uk', $extended = false ) {
 		global $iso3166;
-			
+		
 		// Get current weather info
 		if ( preg_match( '/^\d{7}$/', $city ) ) {
-			$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?id=$city&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )) );
+			$url = sprintf( 'http://api.openweathermap.org/data/2.5/weather?id=%s&units=metric&APPID=80e6adde4b84756459e533351cb8487a', $city );
 		} else {
-			$url = sprintf( "http://api.openweathermap.org/data/2.5/weather?q=$city,$country&units=metric&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+			$url = sprintf( 'http://api.openweathermap.org/data/2.5/weather?q=%1$s,%2$s&units=metric&APPID=80e6adde4b84756459e533351cb8487a', $city, $country );
 		}
 		
-		// Create JSON array
-		$content = wp_remote_get( $url );
+		// Create JSON array Set timeout to 10s for when OpenWeatherMap is being slow
+		$content = wp_remote_get( $url, array( 'timeout' => 10 ) );
 		$json = json_decode( wp_remote_retrieve_body( $content ), true );
-
-		// Change the user agent string (Fixes problem with results of some country/city locations not being returned)
-		add_filter('http_headers_useragent', 'icit_change_user_agent');
 
 		// This will be our repository for the results.
 		$output = array( );
-
-		// Break if OpenWeatherMap returns an error
-		if ( isset( $json[ 'cod' ] ) && substr( $json[ 'cod' ], 0, 2 ) != '20' ) {
 		
-				$output [ 'error' ] = $json[ 'message' ];
-				return $output;
+		// Break if OpenWeatherMap returns an error
+		if ( isset( $json[ 'cod' ] ) && ( substr( $json[ 'cod' ], 0, 2 ) != '20' ) || !isset( $json[ 'name' ] ) ) {
+		
+			$output [ 'error' ] = $json[ 'message' ];
+			return $output;
 		
 		} else {
 			
@@ -52,16 +43,16 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 
 			// Get next three day forecast
 			if ( preg_match( '/^\d{7}$/', $city ) ) {
-				$url = sprintf( "http://api.openweathermap.org/data/2.5/forecast/daily?id=$city&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+				$url = sprintf( 'http://api.openweathermap.org/data/2.5/forecast/daily?id=%s&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a', $city );
 			} else {
-				$url = sprintf( "http://api.openweathermap.org/data/2.5/forecast/daily?q=$city,$country&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a" . apply_filters('icit_weather_widget_locale', get_locale()), urlencode(strtolower( $city )), in_array( $country, array_keys( $iso3166 ) ) ? strtolower( $country ) : 'uk' );
+				$url = sprintf( 'http://api.openweathermap.org/data/2.5/forecast/daily?q=%1$s,%2$s&units=metric&cnt=4&APPID=80e6adde4b84756459e533351cb8487a', $city, $country );
 			}
 			
 			// Create JSON array
-			$content = wp_remote_get( $url );
+			$content = wp_remote_get( $url, array( 'timeout' => 10 ) );
 			$json = json_decode( wp_remote_retrieve_body( $content ), true );
 
-			if ( isset( $json[ 'cod' ] ) && substr( $json[ 'cod' ], 0, 2 ) != '20' ) {
+			if ( isset( $json[ 'cod' ] ) && ( substr( $json[ 'cod' ], 0, 2 ) != '20' ) || !isset( $json[ 'list' ] ) ) {
 			
 				$output [ 'error' ] = $json[ 'message' ];
 				return $output;
@@ -71,6 +62,7 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 				// Extract the forecast info from the feed and declare variables for attributes.
 				$output[ 'forecast' ] = array( );
 				foreach ( $json[ 'list' ] as $i => $forecast ) {
+					
 					if ( $i == 0 )
 						continue;
 					

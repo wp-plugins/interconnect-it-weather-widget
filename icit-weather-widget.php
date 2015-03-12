@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.4.1
+ Version: 2.4.2
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -110,19 +110,19 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		
 		}
 
-		function widget( $args, $instance  ) {
+		function widget( $args, $instance ) {
 			global $iso3166;
 			
 			// Include icon font
-			wp_enqueue_style('icomoon', ICIT_WEATHER_URL. '/images/icomoon/style.css');		
+			wp_enqueue_style('icomoon', ICIT_WEATHER_URL. '/images/icomoon/style.css');
 			
 			extract( $args, EXTR_SKIP );
 
 			$instance = wp_parse_args( $instance, $this->defaults );
 			extract( $instance, EXTR_SKIP );
 
-			// Update
-			if ( empty( $data ) || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
+			// Update if $data is empty / reurns an error / forecast is not returned / update time has passed
+			if ( empty( $data ) || isset( $data[ 'error' ] ) || ( $display != 'none' && !isset( $data[ 'forecast' ] ) ) || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
 				// We need to run an update on the data
 				$all_args = get_option( $this->option_name );
 
@@ -145,9 +145,14 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 			if ( ! empty( $data ) ) {
 
-				if ( isset( $data[ 'error' ] ) ) {
-					_e( '<p>An error has occured with the ICIT Weather Widget, check your settings to make sure the city you are searching for exists. ' . $data['error' ] . '</p>', 'icit_weather' );
+				// Display error message if nothing returned or city not found
+				if ( isset( $data[ 'error' ] ) || !isset( $data[ 'current' ][ 'city' ] ) ) {
+					_e( '<p>An error has occured with the ICIT Weather Widget, check your settings to make sure the city you are searching for exists.</p>', 'icit_weather' );
 					return;
+				}
+				
+				if ( !isset( $data[ 'forecast' ] ) ) {
+					$display = "none";
 				}
 				
 				// check the widget has class name and id
@@ -166,7 +171,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 					else
 						$this->css( $style, $primary_night, $secondary_night, $display );
 				}
-					
+				
 				// tidy up location name
 				$location = array();
 				$weather_city = $data[ 'current' ][ 'city' ];
@@ -880,10 +885,6 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		color: <?= $primary; ?>;
 	}
 	
-	#<?= $this->id ?> .icit-credit-link a:hover {
-		color: <?= $secondary; ?>;
-	}
-	
 </style>
 
 			<?php ;} else { ?>
@@ -985,10 +986,6 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 	#<?= $this->id ?> .icit-credit-link a {
 		color: <?= $primary; ?>;
-	}
-	
-	#<?= $this->id ?> .icit-credit-link a:hover {
-		color: <?= $secondary; ?>;
 	}
 	
 </style>

@@ -4,7 +4,7 @@ Contributors: interconnectit, AndyWalmsley, Mim McNeela, spectacula, sanchothefa
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.1.1
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Weather information is pulled from the OpenWeatherMap API. This plugin adds a wi
 The widget can be configured as follows:
 
 * Country - choose the country to get weather data from. (Some countries do not have an average result for weather conditions)
-* City - Enter the name of your area to recieve the weather results.
+* City - Enter the name of your area to recieve the weather results. If you want to use City ID, go to [OpenWeatherMaps City List](http://openweathermap.org/help/city_list.txt).
 * Display Mode - you can choose to show either a compact view of the current weather or show the forecast for the current day and next three days.
 * Colour Style - Choose between two styles of colouring:
     * Style 1 - Primary colour: Background colour of current weather and font colour of forecast, Secondary colour: Font colour of current weather and background colour of forecast.
@@ -51,7 +51,7 @@ This could be because there are no weather results returned from OpenWeatherMap 
 
 = Using the shortcode =
 
-Put the following shortcode in your post or page to diplay the widget there instead of a widget space: [icit_weather]
+Put the following shortcode in your post or page to diplay the widget there instead of a widget space: `[icit_weather]`
 The shortcode can take the following parameters (value in brackets is the default if parameter is left out):
 
 * title - Text to override the city/country name ("")
@@ -69,7 +69,11 @@ The shortcode can take the following parameters (value in brackets is the defaul
 * credit - true/false show the interconnect/it credit link
 
 For example:
-[icit_weather city="Liverpool" country="UK" celsius="true" breakdown="false" display="none" background_day="red" background_night="rgb(129,160,255)"]
+`[icit_weather city="Liverpool" country="UK" celsius="true" breakdown="false" display="none" background_day="red" background_night="rgb(129,160,255)"]`
+
+= Getting City ID =
+
+To find your City's ID go to [OpenWeatherMaps City List](http://openweathermap.org/help/city_list.txt) and use ctrl + F to search for the city name, the ID is the left most column.
 
 == Known problems ==
 
@@ -86,6 +90,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.4.2 - Plugin should now be more reliable
 * 2.4.1 - Fixed an issue with the content being wider than the wrapper in some themes
 * 2.4   - A lot of styling updates and a bit of cleanup of the markup and settings
     * Added colour styles: Check the description/readme for information on which style does what
@@ -104,6 +109,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Upgrade Notice ==
 
+* 2.4.2 - Plugin should now be more reliable
 * 2.4   - More colour customisations!
 * 2.3.3 - Styling updates! And the temperature now shouldn't show as '-0'!
 * 2.3.2 - Bugfixes!
