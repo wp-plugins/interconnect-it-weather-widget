@@ -113,6 +113,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		function widget( $args, $instance ) {
 			global $iso3166;
 			$id = $this->id;
+			$data = get_transient( $id );
 			
 			// Include icon font
 			wp_enqueue_style('icomoon', ICIT_WEATHER_URL. '/images/icomoon/style.css');
@@ -122,38 +123,30 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			$instance = wp_parse_args( $instance, $this->defaults );
 			extract( $instance, EXTR_SKIP );
 
-			// Update if $data is empty / reurns an error / forecast is not returned / update time has passed
-			if ( empty( $data ) || isset( $data[ 'error' ] ) || ( $display != 'none' && !isset( $data[ 'forecast' ] ) ) || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
-				// Delete the cached data if there was an error in it or if time expired
+			// Something is in data but it is either an error or has been updated then delete the transient
+			if ( $data === false || isset( $data[ 'error' ] ) || ( $display != 'none' && !isset( $data[ 'forecast' ] ) ) || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
+				
 				delete_transient( $id );
 				
 				// We need to run an update on the data
 				$all_args = get_option( $this->option_name );
-
+			
 				$results = icit_fetch_open_weather( $city, $country, $display );
-
+				
 				if ( ! is_wp_error( $results ) ) {
 					$data = $all_args[ $this->number ][ 'data' ] = $results;
 					$updated = $all_args[ $this->number ][ 'updated' ] = time( );
-
+					
 					if( ! update_option( $this->option_name, $all_args ) )
 						add_option( $this->option_name, $all_args );
-				} else {
-					// If we're looking for somewhere that's not there then we need to drop the cached data
-					if ( $results->get_error_code( ) == 'bad_location' ) {
-						unset( $data );
-					}
-					$this->add_error( $results );
 				}
-			} else {
-				// Get the cached data if there were no errors
-				$data = get_transient( $id );
+				
+				// Create a transient with data returned from OpenWeatherMap
+				set_transient( $id, $data, intval( $frequency ) * 60 );
+				
 			}
 
 			if ( ! empty( $data ) ) {
-				
-				// Cache the data
-				set_transient( $id, $data, intval( $frequency ) * 60 );
 				
 				// Display error message if nothing returned or city not found
 				if ( isset( $data[ 'error' ] ) || !isset( $data[ 'current' ][ 'city' ] ) ) {
@@ -766,7 +759,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				$instance[ 'errors' ] = $old_instance[ 'errors' ];
 			else
 				$instance[ 'errors' ] = array( );
-
+			
 			do_action( 'icit_weather_widget_update', $new_instance, $old_instance, $instance );
 			
 			return $instance;
