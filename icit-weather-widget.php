@@ -122,10 +122,18 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 			$instance = wp_parse_args( $instance, $this->defaults );
 			extract( $instance, EXTR_SKIP );
-
-			// Something is in data but it is either an error or has been updated then delete the transient
-			if ( $data === false || isset( $data[ 'error' ] ) || ( $display != 'none' && !isset( $data[ 'forecast' ] ) ) || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
+			
+			// Check if there is an error with the current data
+			if ( isset( $data[ 'error' ] ) || $display != 'none' && ( !isset( $data[ 'forecast' ][ 0 ] ) || !isset( $data[ 'forecast' ][ 1 ] ) || !isset( $data[ 'forecast' ][ 2 ] ) ) ) {
+				$error = true;
+			} else {
+				$error = false;
+			}
+			
+			// data is empty / settings have been updated / error has occurred then delete current data and refresh
+			if ( $data === false || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) || $error === true ) {
 				
+				// Delete the previous transient to make sure all data is clear
 				delete_transient( $id );
 				
 				// We need to run an update on the data
