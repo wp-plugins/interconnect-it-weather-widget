@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.4.2
+ Version: 2.4.3
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -112,6 +112,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 		function widget( $args, $instance ) {
 			global $iso3166;
+			$id = $this->id;
 			
 			// Include icon font
 			wp_enqueue_style('icomoon', ICIT_WEATHER_URL. '/images/icomoon/style.css');
@@ -123,6 +124,9 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 			// Update if $data is empty / reurns an error / forecast is not returned / update time has passed
 			if ( empty( $data ) || isset( $data[ 'error' ] ) || ( $display != 'none' && !isset( $data[ 'forecast' ] ) ) || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
+				// Delete the cached data if there was an error in it or if time expired
+				delete_transient( $id );
+				
 				// We need to run an update on the data
 				$all_args = get_option( $this->option_name );
 
@@ -141,13 +145,19 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 					}
 					$this->add_error( $results );
 				}
+			} else {
+				// Get the cached data if there were no errors
+				$data = get_transient( $id );
 			}
 
 			if ( ! empty( $data ) ) {
-
+				
+				// Cache the data
+				set_transient( $id, $data, intval( $frequency ) * 60 );
+				
 				// Display error message if nothing returned or city not found
 				if ( isset( $data[ 'error' ] ) || !isset( $data[ 'current' ][ 'city' ] ) ) {
-					_e( '<p>An error has occured with the ICIT Weather Widget, check your settings to make sure the city you are searching for exists.</p>', 'icit_weather' );
+					_e( '<p>An error has occurred with the ICIT Weather Widget, if the issue persists through refreshing please contact the site administrator.</p>', 'icit_weather' );
 					return;
 				}
 				
@@ -159,7 +169,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				if ( !preg_match('/class=\"/', $before_widget) )
 					$before_widget = preg_replace("/^\<([a-zA-Z]+)/", '<$1 class="weather-widget"', $before_widget);
 				if ( !preg_match('/id=\"/', $before_widget) )
-					$before_widget = preg_replace("/^\<([a-zA-Z]+)/", '<$1 id="' . $this->id . '"', $before_widget);
+					$before_widget = preg_replace("/^\<([a-zA-Z]+)/", '<$1 id="' . $id . '"', $before_widget);
 
 				// add the display style to the widget's class
  				echo preg_replace('/class\=\"/', 'class="weather-'.$display.' ', $before_widget);

@@ -1,5 +1,10 @@
 <?php
 
+function icit_change_user_agent( ) {
+	$agent = "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/534.10 (KHTML, like Gecko) Chrome/8.0.552.237 Safari/534.10";
+	return $agent;
+}
+
 if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 	function icit_fetch_open_weather( $city = 'liverpool', $country = 'uk', $extended = false ) {
 		global $iso3166;
@@ -14,7 +19,10 @@ if ( ! function_exists( 'icit_fetch_open_weather' ) ) {
 		// Create JSON array Set timeout to 10s for when OpenWeatherMap is being slow
 		$content = wp_remote_get( $url, array( 'timeout' => 10 ) );
 		$json = json_decode( wp_remote_retrieve_body( $content ), true );
-
+		
+		// Change the user agent string (Fixes problem with results of some country/city locations not being returned)
+		add_filter('http_headers_useragent', 'icit_change_user_agent');
+		
 		// This will be our repository for the results.
 		$output = array( );
 		
