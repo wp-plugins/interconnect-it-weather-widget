@@ -71,7 +71,8 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			'frequency' => 60,
 			'updated' => 0,
 			'errors' => false,
-			'clear_errors' => false
+			'clear_errors' => false,
+			'shortcode' => false
 		);
 
 		var $data = array();
@@ -81,7 +82,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		*/
 		function __construct( ) {
 			$widget_ops = array( 'classname' => __CLASS__, 'description' => __( 'Show the weather from a location you specify.', 'icit_weather' ) );
-			$this->WP_Widget( __CLASS__, __( 'ICIT Weather', 'icit_weather'), $widget_ops);
+			$this->WP_Widget( __CLASS__, __( 'ICIT Weather', 'icit_weather' ), $widget_ops);
 			
 			add_shortcode( 'icit_weather', array( $this, 'icit_weather_shortcode' ) );
 		}
@@ -100,7 +101,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				$attributes[ 'mph' ] = false;
 			if ( $attributes[ 'credit' ] === "false" )
 				$attributes[ 'credit' ] = false;
-			
+			$attributes[ 'shortcode' ] = true;
 			
 			ob_start();
 			the_widget( 'icit_weather_widget', $attributes );
@@ -112,6 +113,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 
 		function widget( $args, $instance ) {
 			global $iso3166;
+			
 			$id = $this->id;
 			$data = get_transient( $id );
 			
@@ -123,15 +125,28 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			$instance = wp_parse_args( $instance, $this->defaults );
 			extract( $instance, EXTR_SKIP );
 			
+			// Check if the widget is being displayed through the shortcode as the updated time is useless when settings are modified through the post
+			// No way to know when exactly the settings have been changed so just assume they have when the post is updated
+			if ( $instance[ 'shortcode' ] && ( !isset( $data[ 'updated' ] ) || $modified = get_the_modified_time( 'U' ) > $data[ 'updated' ] ) )
+				$updated = $modified;
+			elseif ( $instance[ 'shortcode' ] )
+				$updated = $data[ 'updated' ];
+			
 			// Check if there is an error with the current data
-			if ( isset( $data[ 'error' ] ) || $display != 'none' && ( !isset( $data[ 'forecast' ][ 0 ] ) || !isset( $data[ 'forecast' ][ 1 ] ) || !isset( $data[ 'forecast' ][ 2 ] ) ) ) {
+			if ( isset( $data[ 'error' ] ) || $display != 'none' && ( !isset( $data[ 'forecast' ][ 0 ] ) || !isset( $data[ 'forecast' ][ 1 ] ) || !isset( $data[ 'forecast' ][ 2 ] ) ) )
 				$error = true;
-			} else {
+			else
 				$error = false;
+			
+			// Check if the update time has passed or if settings have been updated
+			if ( intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
+				$update = true;
+			} else {
+				$update = false;
 			}
 			
 			// data is empty / settings have been updated / error has occurred then delete current data and refresh
-			if ( $data === false || intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) || $error === true ) {
+			if ( $data === false || $update === true || $error === true ) {
 				
 				// Delete the previous transient to make sure all data is clear
 				delete_transient( $id );
@@ -143,7 +158,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				
 				if ( ! is_wp_error( $results ) ) {
 					$data = $all_args[ $this->number ][ 'data' ] = $results;
-					$updated = $all_args[ $this->number ][ 'updated' ] = time( );
+					$data[ 'updated' ] = $all_args[ $this->number ][ 'updated' ] = time( );
 					
 					if( ! update_option( $this->option_name, $all_args ) )
 						add_option( $this->option_name, $all_args );
