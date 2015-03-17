@@ -4,7 +4,7 @@ Contributors: interconnectit, AndyWalmsley, Mim McNeela, spectacula, sanchothefa
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.1.1
-Stable tag: 2.4.2
+Stable tag: 2.4.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,10 @@ To find your City's ID go to [OpenWeatherMaps City List](http://openweathermap.o
 
 == Known problems ==
 
+Occasionally the forecast data is not returned by OpenWeatherMap causing blank space in the forecast list in the widget.
+
+Multiple shortcodes do not work if they are in the same post as the data is stored based on the widget ID if displayed in a widget space or the post ID if using the shortcode.
+
 This widget should work in all themes, although some themes styling will mix with the widget leaving bits that look out of place.
 
 IE7 does not support the icons we use for the weather display.
@@ -90,6 +94,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.4.3 - Now uses Transients to cache data returned from OpenWeatherMap, this makes the plugin more reliable and faster to load after the first call
 * 2.4.2 - Plugin should now be more reliable
 * 2.4.1 - Fixed an issue with the content being wider than the wrapper in some themes
 * 2.4   - A lot of styling updates and a bit of cleanup of the markup and settings
