@@ -114,9 +114,6 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 		function widget( $args, $instance ) {
 			global $iso3166;
 			
-			$id = $this->id;
-			$data = get_transient( $id );
-			
 			// Include icon font
 			wp_enqueue_style('icomoon', ICIT_WEATHER_URL. '/images/icomoon/style.css');
 			
@@ -125,10 +122,19 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			$instance = wp_parse_args( $instance, $this->defaults );
 			extract( $instance, EXTR_SKIP );
 			
+			// Set the id to post id if using shortcode
+			if ( $instance[ 'shortcode' ] )
+				$id = 'icit_weather_widget-' . get_the_ID( );
+			else
+				$id = $this->id;
+			
+			// Get the cached data
+			$data = get_transient( $id );
+			
 			// Check if the widget is being displayed through the shortcode as the updated time is useless when settings are modified through the post
 			// No way to know when exactly the settings have been changed so just assume they have when the post is updated
-			if ( $instance[ 'shortcode' ] && ( !isset( $data[ 'updated' ] ) || $modified = get_the_modified_time( 'U' ) > $data[ 'updated' ] ) )
-				$updated = $modified;
+			if ( $instance[ 'shortcode' ] && ( !isset( $data[ 'updated' ] ) || get_the_modified_time( 'U' ) > $data[ 'updated' ] ) )
+				$updated = get_the_modified_time( 'U' );
 			elseif ( $instance[ 'shortcode' ] )
 				$updated = $data[ 'updated' ];
 			
@@ -185,7 +191,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 				if ( !preg_match('/class=\"/', $before_widget) )
 					$before_widget = preg_replace("/^\<([a-zA-Z]+)/", '<$1 class="weather-widget"', $before_widget);
 				if ( !preg_match('/id=\"/', $before_widget) )
-					$before_widget = preg_replace("/^\<([a-zA-Z]+)/", '<$1 id="' . $id . '"', $before_widget);
+					$before_widget = preg_replace("/^\<([a-zA-Z]+)/", '<$1 id="' . $this->id . '"', $before_widget);
 
 				// add the display style to the widget's class
  				echo preg_replace('/class\=\"/', 'class="weather-'.$display.' ', $before_widget);
@@ -607,7 +613,7 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			);
 			
 			foreach( array_reverse( $directions, true ) as $key => $dir ) {
-				if ( intval( $deg ) > intval( $key ) ) {
+				if ( intval( $deg ) >= intval( $key ) ) {
 					$direction = sprintf( __( '%s', 'icit_weather' ), $dir );
 					break;
 				}
