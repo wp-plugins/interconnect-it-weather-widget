@@ -4,7 +4,7 @@ Contributors: interconnectit, AndyWalmsley, Mim McNeela, spectacula, sanchothefa
 Tags: weather, widget
 Requires at least: 3.8.1
 Tested up to: 4.1.1
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -94,6 +94,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Changelog ==
 
+* 2.4.4 - Fixes an error with shortcodes not updating weather
 * 2.4.3 - Now uses Transients to cache data returned from OpenWeatherMap, this makes the plugin more reliable and faster to load after the first call
 * 2.4.2 - Plugin should now be more reliable
 * 2.4.1 - Fixed an issue with the content being wider than the wrapper in some themes
@@ -114,6 +115,7 @@ Works in IE8+, Chrome, Firefox, Opera, and Safari.
 
 == Upgrade Notice ==
 
+* 2.4.4 - Fixes an error with shortcodes not updating weather
 * 2.4.2 - Plugin should now be more reliable
 * 2.4   - More colour customisations!
 * 2.3.3 - Styling updates! And the temperature now shouldn't show as '-0'!

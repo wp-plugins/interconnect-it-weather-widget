@@ -3,7 +3,7 @@
  Plugin Name: ICIT Weather Widget
  Plugin URI: http://interconnectit.com
  Description: The ICIT Weather Widget provides a simple way to show a weather forecast that can be styled to suit your theme and won't hit any usage limits.
- Version: 2.4.3
+ Version: 2.4.4
  Author: Interconnect IT, James R Whitehead, Andrew Walmsley & Miriam McNeela
  Author URI: http://interconnectit.com
 */
@@ -134,22 +134,23 @@ if ( ! class_exists( 'icit_weather_widget' ) && version_compare( phpversion( ), 
 			// Check if the widget is being displayed through the shortcode as the updated time is useless when settings are modified through the post
 			// No way to know when exactly the settings have been changed so just assume they have when the post is updated
 			if ( $instance[ 'shortcode' ] && ( !isset( $data[ 'updated' ] ) || get_the_modified_time( 'U' ) > $data[ 'updated' ] ) )
-				$updated = get_the_modified_time( 'U' );
+				$update = true;
 			elseif ( $instance[ 'shortcode' ] )
 				$updated = $data[ 'updated' ];
+			
+			// Check if the update time has passed or if settings have been updated
+			if ( !isset( $update ) ) {
+				if ( intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) )
+					$update = true;
+				else
+					$update = false;
+			}
 			
 			// Check if there is an error with the current data
 			if ( isset( $data[ 'error' ] ) || $display != 'none' && ( !isset( $data[ 'forecast' ][ 0 ] ) || !isset( $data[ 'forecast' ][ 1 ] ) || !isset( $data[ 'forecast' ][ 2 ] ) ) )
 				$error = true;
 			else
 				$error = false;
-			
-			// Check if the update time has passed or if settings have been updated
-			if ( intval( $updated ) + ( intval( $frequency ) * 60 ) < time( ) ) {
-				$update = true;
-			} else {
-				$update = false;
-			}
 			
 			// data is empty / settings have been updated / error has occurred then delete current data and refresh
 			if ( $data === false || $update === true || $error === true ) {
